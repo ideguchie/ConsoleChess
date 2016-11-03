@@ -4,26 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chess
-{
+namespace Chess {
     /// <summary>
     /// Board Object.
     /// </summary>
-    class Board
-    {
+    class Board {
         private Piece[,] arrBoard;
 
         //Constructor
-        public Board()
-        {
-            arrBoard = new Piece[8,8];
+        public Board() {
+            arrBoard = new Piece[8, 8];
             SetBoard();
         }
 
         #region "Text Based Functions"
         //Prints the state of the board.
-        public void PrintBoard(Position pposSelected)
-        {
+        public void PrintBoard(Position pposSelected) {
             for (int y = 0; y < 8; y++) {
                 String s1 = "";
                 String s2 = "";
@@ -33,176 +29,117 @@ namespace Chess
                 String s6 = "";
                 String s7 = "";
                 String s8 = "";
-                if (pposSelected != null)
-                {
-                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(0, y)))
-                    {
+                if (pposSelected != null) {
+                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(0, y))) {
                         s1 = " X";
-                        if (arrBoard[0, y] != null)
-                        {
+                        if (arrBoard[0, y] != null) {
                             s1 += arrBoard[0, y].IsWhite() + arrBoard[0, y].PieceType();
-                        }
-                        else
-                        {
+                        } else {
                             s1 += "  ";
                         }
-                    }
-                    else if (arrBoard[0, y] != null)
-                    {
+                    } else if (arrBoard[0, y] != null) {
                         s1 = " " + arrBoard[0, y].IsWhite() + arrBoard[0, y].PieceType() + " ";
                     }
 
-                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(1, y)))
-                    {
+                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(1, y))) {
                         s2 = " X";
-                        if (arrBoard[1, y] != null)
-                        {
+                        if (arrBoard[1, y] != null) {
                             s2 += arrBoard[1, y].IsWhite() + arrBoard[1, y].PieceType();
-                        }
-                        else
-                        {
+                        } else {
                             s2 += "  ";
                         }
-                    }
-                    else if (arrBoard[1, y] != null)
-                    {
+                    } else if (arrBoard[1, y] != null) {
                         s2 = " " + arrBoard[1, y].IsWhite() + arrBoard[1, y].PieceType() + " ";
                     }
 
-                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(2, y)))
-                    {
+                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(2, y))) {
                         s3 = " X";
-                        if (arrBoard[2, y] != null)
-                        {
+                        if (arrBoard[2, y] != null) {
                             s3 += arrBoard[2, y].IsWhite() + arrBoard[2, y].PieceType();
-                        }
-                        else
-                        {
+                        } else {
                             s3 += "  ";
                         }
-                    }
-                    else if (arrBoard[2, y] != null)
-                    {
+                    } else if (arrBoard[2, y] != null) {
                         s3 = " " + arrBoard[2, y].IsWhite() + arrBoard[2, y].PieceType() + " ";
                     }
 
-                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(3, y)))
-                    {
+                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(3, y))) {
                         s4 = " X";
-                        if (arrBoard[3, y] != null)
-                        {
+                        if (arrBoard[3, y] != null) {
                             s4 += arrBoard[3, y].IsWhite() + arrBoard[3, y].PieceType();
-                        }
-                        else
-                        {
+                        } else {
                             s4 += "  ";
                         }
-                    }
-                    else if (arrBoard[3, y] != null)
-                    {
+                    } else if (arrBoard[3, y] != null) {
                         s4 = " " + arrBoard[3, y].IsWhite() + arrBoard[3, y].PieceType() + " ";
                     }
 
-                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(4, y)))
-                    {
+                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(4, y))) {
                         s5 = " X";
-                        if (arrBoard[4, y] != null)
-                        {
+                        if (arrBoard[4, y] != null) {
                             s5 += arrBoard[4, y].IsWhite() + arrBoard[4, y].PieceType();
-                        }
-                        else
-                        {
+                        } else {
                             s5 += "  ";
                         }
-                    }
-                    else if (arrBoard[4, y] != null)
-                    {
+                    } else if (arrBoard[4, y] != null) {
                         s5 = " " + arrBoard[4, y].IsWhite() + arrBoard[4, y].PieceType() + " ";
                     }
 
-                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(5, y)))
-                    {
+                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(5, y))) {
                         s6 = " X";
-                        if (arrBoard[5, y] != null)
-                        {
+                        if (arrBoard[5, y] != null) {
                             s6 += arrBoard[5, y].IsWhite() + arrBoard[5, y].PieceType();
-                        }
-                        else
-                        {
+                        } else {
                             s6 += "  ";
                         }
-                    }
-                    else if (arrBoard[5, y] != null)
-                    {
+                    } else if (arrBoard[5, y] != null) {
                         s6 = " " + arrBoard[5, y].IsWhite() + arrBoard[5, y].PieceType() + " ";
                     }
 
-                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(6, y)))
-                    {
+                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(6, y))) {
                         s7 = " X";
-                        if (arrBoard[6, y] != null)
-                        {
+                        if (arrBoard[6, y] != null) {
                             s7 += arrBoard[6, y].IsWhite() + arrBoard[6, y].PieceType();
-                        }
-                        else
-                        {
+                        } else {
                             s7 += "  ";
                         }
-                    }
-                    else if (arrBoard[6, y] != null)
-                    {
+                    } else if (arrBoard[6, y] != null) {
                         s7 = " " + arrBoard[6, y].IsWhite() + arrBoard[6, y].PieceType() + " ";
                     }
 
-                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(7, y)))
-                    {
+                    if (arrBoard[pposSelected.getX(), pposSelected.getY()].ValidMove(arrBoard, new Position(7, y))) {
                         s8 = " X";
-                        if (arrBoard[7, y] != null)
-                        {
+                        if (arrBoard[7, y] != null) {
                             s8 += arrBoard[7, y].IsWhite() + arrBoard[7, y].PieceType();
-                        }
-                        else
-                        {
+                        } else {
                             s8 += "  ";
                         }
-                    }
-                    else if (arrBoard[7, y] != null)
-                    {
+                    } else if (arrBoard[7, y] != null) {
                         s8 = " " + arrBoard[7, y].IsWhite() + arrBoard[7, y].PieceType() + " ";
                     }
-                }
-                else
-                {
-                    if (arrBoard[0, y] != null)
-                    {
+                } else {
+                    if (arrBoard[0, y] != null) {
                         s1 = " " + arrBoard[0, y].IsWhite() + arrBoard[0, y].PieceType() + " ";
                     }
-                    if (arrBoard[1, y] != null)
-                    {
+                    if (arrBoard[1, y] != null) {
                         s2 = " " + arrBoard[1, y].IsWhite() + arrBoard[1, y].PieceType() + " ";
                     }
-                    if (arrBoard[2, y] != null)
-                    {
+                    if (arrBoard[2, y] != null) {
                         s3 = " " + arrBoard[2, y].IsWhite() + arrBoard[2, y].PieceType() + " ";
                     }
-                    if (arrBoard[3, y] != null)
-                    {
+                    if (arrBoard[3, y] != null) {
                         s4 = " " + arrBoard[3, y].IsWhite() + arrBoard[3, y].PieceType() + " ";
                     }
-                    if (arrBoard[4, y] != null)
-                    {
+                    if (arrBoard[4, y] != null) {
                         s5 = " " + arrBoard[4, y].IsWhite() + arrBoard[4, y].PieceType() + " ";
                     }
-                    if (arrBoard[5, y] != null)
-                    {
+                    if (arrBoard[5, y] != null) {
                         s6 = " " + arrBoard[5, y].IsWhite() + arrBoard[5, y].PieceType() + " ";
                     }
-                    if (arrBoard[6, y] != null)
-                    {
+                    if (arrBoard[6, y] != null) {
                         s7 = " " + arrBoard[6, y].IsWhite() + arrBoard[6, y].PieceType() + " ";
                     }
-                    if (arrBoard[7, y] != null)
-                    {
+                    if (arrBoard[7, y] != null) {
                         s8 = " " + arrBoard[7, y].IsWhite() + arrBoard[7, y].PieceType() + " ";
                     }
                 }
@@ -211,38 +148,29 @@ namespace Chess
             Console.ReadLine();
         }
 
-        private void PrintRow(String o, String tw, String th, String fu, String fi, String sx, String sv, String e, int row)
-        {
-            if (o == "" && arrBoard[0, row] == null)
-            {
+        private void PrintRow(String o, String tw, String th, String fu, String fi, String sx, String sv, String e, int row) {
+            if (o == "" && arrBoard[0, row] == null) {
                 o = "    ";
             }
-            if (tw == "" && arrBoard[1, row] == null)
-            {
+            if (tw == "" && arrBoard[1, row] == null) {
                 tw = "    ";
             }
-            if (th == "" && arrBoard[2, row] == null)
-            {
+            if (th == "" && arrBoard[2, row] == null) {
                 th = "    ";
             }
-            if (fu == "" && arrBoard[3, row] == null)
-            {
+            if (fu == "" && arrBoard[3, row] == null) {
                 fu = "    ";
             }
-            if (fi == "" && arrBoard[4, row] == null)
-            {
+            if (fi == "" && arrBoard[4, row] == null) {
                 fi = "    ";
             }
-            if (sx == "" && arrBoard[5, row] == null)
-            {
+            if (sx == "" && arrBoard[5, row] == null) {
                 sx = "    ";
             }
-            if (sv == "" && arrBoard[6, row] == null)
-            {
+            if (sv == "" && arrBoard[6, row] == null) {
                 sv = "    ";
             }
-            if (e == "" && arrBoard[7, row] == null)
-            {
+            if (e == "" && arrBoard[7, row] == null) {
                 e = "    ";
             }
             Console.WriteLine("______ ______ ______ ______ ______ ______ ______ ______");
@@ -265,10 +193,8 @@ namespace Chess
         //}
 
         //Moves a given piece from one space to another if the move is valid. Returns true if a move was made.
-        public bool SetPiece(Position pposPosition, Position pposMoveTo)
-        {
-            if(arrBoard[pposPosition.getX(), pposPosition.getY()].ValidMove(arrBoard, pposMoveTo))
-            {
+        public bool SetPiece(Position pposPosition, Position pposMoveTo) {
+            if (arrBoard[pposPosition.getX(), pposPosition.getY()].ValidMove(arrBoard, pposMoveTo)) {
                 arrBoard[pposMoveTo.getX(), pposMoveTo.getY()] = null;
                 arrBoard[pposPosition.getX(), pposPosition.getY()].SetPosition(pposMoveTo);
                 arrBoard[pposMoveTo.getX(), pposMoveTo.getY()] = arrBoard[pposPosition.getX(), pposPosition.getY()];
@@ -279,8 +205,7 @@ namespace Chess
         }
 
         //Sets the initial state of the board.
-        private void SetBoard()
-        {
+        private void SetBoard() {
             //inital white piece positions
             Position posWhitePawn1 = new Position(0, 6);
             Position posWhitePawn2 = new Position(1, 6);

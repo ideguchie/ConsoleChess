@@ -4,13 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chess
-{
+namespace Chess {
     /// <summary>
     /// Piece interface. Defines what a Piece must have.
     /// </summary>
-    interface Piece
-    {
+    interface Piece {
         void SetPosition(Position pposPosition);
 
         void SetSelected(bool pblnSelected);

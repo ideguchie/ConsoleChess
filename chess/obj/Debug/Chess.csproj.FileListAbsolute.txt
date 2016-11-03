@@ -4,3 +4,9 @@ c:\users\elliot\documents\visual studio 2015\Projects\Chess\Chess\bin\Debug\Ches
 c:\users\elliot\documents\visual studio 2015\Projects\Chess\Chess\obj\Debug\Chess.csprojResolveAssemblyReference.cache
 c:\users\elliot\documents\visual studio 2015\Projects\Chess\Chess\obj\Debug\Chess.exe
 c:\users\elliot\documents\visual studio 2015\Projects\Chess\Chess\obj\Debug\Chess.pdb
+C:\Users\Elliot\ConsoleChess\Chess\bin\Debug\Chess.exe.config
+C:\Users\Elliot\ConsoleChess\Chess\obj\Debug\Chess.exe
+C:\Users\Elliot\ConsoleChess\Chess\obj\Debug\Chess.pdb
+C:\Users\Elliot\ConsoleChess\Chess\bin\Debug\Chess.exe
+C:\Users\Elliot\ConsoleChess\Chess\bin\Debug\Chess.pdb
+C:\Users\Elliot\ConsoleChess\Chess\obj\Debug\Chess.csprojResolveAssemblyReference.cache

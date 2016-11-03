@@ -4,10 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chess
-{
-    abstract class Player
-    {
+namespace Chess {
+    abstract class Player {
 
     }
 }
