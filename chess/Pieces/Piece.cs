@@ -13,12 +13,14 @@ namespace Chess {
 
         void SetSelected(bool pblnSelected);
 
+        void SetMoved(bool pblnMoved);
+
         bool IsSelected();
 
         //temp String, should be bool
         String IsWhite();
 
-        bool ValidMove(Piece[,] parrBoard, Position pposPosition);
+        bool ValidMove(Piece[,] parrBoard, Position pposMoveTo);
 
         String PieceType();
     }

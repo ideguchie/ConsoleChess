@@ -59,14 +59,62 @@ namespace Chess {
                 objBoard.PrintBoard(new Position(7, 4));
             }
 
-            newbool = objBoard.SetPiece(new Position(7, 4), new Position(7, 5));
+            newbool = objBoard.SetPiece(new Position(0, 6), new Position(0, 4));
             if (newbool) {
-                objBoard.PrintBoard(new Position(7, 5));
+                objBoard.PrintBoard(new Position(0, 4));
             }
 
-            newbool = objBoard.SetPiece(new Position(7, 5), new Position(7, 6));
+            newbool = objBoard.SetPiece(new Position(0, 4), new Position(0, 3));
             if (newbool) {
-                objBoard.PrintBoard(new Position(7, 6));
+                objBoard.PrintBoard(new Position(0, 3));
+            }
+
+            newbool = objBoard.SetPiece(new Position(1, 1), new Position(1, 3));
+            if (newbool) {
+                objBoard.PrintBoard(new Position(1, 3));
+            }
+
+            //en passant test
+            objBoard.PrintBoard(new Position(0, 3));
+
+            newbool = objBoard.SetPiece(new Position(1, 7), new Position(2, 5));
+            if (newbool) {
+                objBoard.PrintBoard(new Position(2, 5));
+            }
+
+            newbool = objBoard.SetPiece(new Position(2, 5), new Position(1, 3));
+            if (newbool) {
+                objBoard.PrintBoard(new Position(1, 3));
+            }
+
+            newbool = objBoard.SetPiece(new Position(1, 3), new Position(2, 1));
+            if (newbool) {
+                objBoard.PrintBoard(new Position(2, 1));
+            }
+
+            newbool = objBoard.SetPiece(new Position(1, 6), new Position(1, 4));
+            if(newbool) {
+                objBoard.PrintBoard(new Position(1, 4));
+            }
+
+            newbool = objBoard.SetPiece(new Position(1, 4), new Position(1, 3));
+            if (newbool) {
+                objBoard.PrintBoard(new Position(1, 3));
+            }
+
+            newbool = objBoard.SetPiece(new Position(1, 3), new Position(1, 2));
+            if (newbool) {
+                objBoard.PrintBoard(new Position(1, 2));
+            }
+
+            newbool = objBoard.SetPiece(new Position(1, 2), new Position(1, 1));
+            if (newbool) {
+                objBoard.PrintBoard(new Position(1, 1));
+            }
+
+            newbool = objBoard.SetPiece(new Position(1, 1), new Position(1, 0));
+            if (newbool) {
+                objBoard.PrintBoard(new Position(1, 0));
             }
         }
     }

@@ -13,6 +13,7 @@ namespace Chess {
         private bool isWhite;
         private bool hasMoved;
         private bool isSelected;
+        private string strEnPassant;
 
         //Constructor
         public Pawn(bool pblnIsWhite, Position pposPosition) {
@@ -20,10 +21,11 @@ namespace Chess {
             this.isWhite = pblnIsWhite;
             this.hasMoved = false;
             this.isSelected = false;
+            this.strEnPassant = "";
         }
 
         //Returns true if piece is white.
-        public String IsWhite() {
+        public string IsWhite() {
             if (isWhite) {
                 return "W";
             }
@@ -38,9 +40,13 @@ namespace Chess {
         }
 
         //Returns the type of piece in the form of a String.
-        public String PieceType() {
+        public string PieceType() {
             return "P";
             //return "Pawn";
+        }
+
+        public string GetEnPassant() {
+            return strEnPassant;
         }
 
         //Sets the piece to selected or not.
@@ -53,46 +59,56 @@ namespace Chess {
             position = pposPosition;
         }
 
-        //Two different decision trees determinant on color of piece, because pawns only move in one direction. Returns true if the move is valid.
+        public void SetMoved(bool pblnMoved) {
+            hasMoved = pblnMoved;
+        }
+
+        public void SetEnPassant(string pstrEnPassant) {
+            strEnPassant = pstrEnPassant;
+        }
+
+        /// <summary>
+        /// Two different decision trees determinant on color of piece, because pawns only move in one direction.
+        /// </summary>
+        /// <param name="parrBoard">Current state of board.</param>
+        /// <param name="pposMoveTo">Proposed move.</param>
+        /// <returns>Returns true if the move is valid.</returns>
         public bool ValidMove(Piece[,] parrBoard, Position pposMoveTo) {
             if (isWhite) {
-                if ((pposMoveTo.getX() == (position.getX() - 1) &&
+                if (strEnPassant == "left" || ((pposMoveTo.getX() == (position.getX() - 1) &&
                     pposMoveTo.getY() == position.getY() - 1) &&
                     parrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
-                    IsEnemy(parrBoard, pposMoveTo)) {
-                    hasMoved = true;
+                    IsEnemy(parrBoard, pposMoveTo))) {
+
                     return true;
-                } else if ((pposMoveTo.getX() == (position.getX() + 1) &&
+                } else if (strEnPassant == "right" || ((pposMoveTo.getX() == (position.getX() + 1) &&
                       pposMoveTo.getY() == position.getY() - 1) &&
                       parrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
-                      IsEnemy(parrBoard, pposMoveTo)) {
-                    hasMoved = true;
+                      IsEnemy(parrBoard, pposMoveTo))) {
+
                     return true;
                 }
 
                 if (CheckSpace(parrBoard, pposMoveTo)) {
-                    hasMoved = true;
                     return true;
                 }
             } else {
-                if ((pposMoveTo.getX() == (position.getX() - 1) &&
+                if (strEnPassant == "left" || ((pposMoveTo.getX() == (position.getX() - 1) &&
                     pposMoveTo.getY() == position.getY() + 1) &&
                     parrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
-                    IsEnemy(parrBoard, pposMoveTo)) {
-                    hasMoved = true;
+                    IsEnemy(parrBoard, pposMoveTo))) {
+
                     return true;
-                } else if ((pposMoveTo.getX() == (position.getX() + 1) &&
+                } else if (strEnPassant == "right" || ((pposMoveTo.getX() == (position.getX() + 1) &&
                       pposMoveTo.getY() == position.getY() + 1) &&
                       parrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
-                      IsEnemy(parrBoard, pposMoveTo)) {
-                    hasMoved = true;
+                      IsEnemy(parrBoard, pposMoveTo))) {
+
                     return true;
                 }
 
                 if (CheckSpace(parrBoard, pposMoveTo)) {
-                    hasMoved = true;
                     return true;
-
                 }
             }
             return false;
@@ -112,7 +128,8 @@ namespace Chess {
                     pposPosition.getY() < position.getY() &&
                     !hasMoved &&
                     Math.Abs(pposPosition.getY() - position.getY()) < 3 &&
-                    parrBoard[position.getX(), position.getY() - 1] == null) {
+                    parrBoard[position.getX(), position.getY() - 1] == null &&
+                    parrBoard[position.getX(), position.getY() - 2] == null) {
 
                     return true;
 
@@ -129,7 +146,8 @@ namespace Chess {
                       pposPosition.getY() > position.getY() &&
                       !hasMoved &&
                       Math.Abs(pposPosition.getY() - position.getY()) < 3 &&
-                      parrBoard[position.getX(), position.getY() + 1] == null) {
+                      parrBoard[position.getX(), position.getY() + 1] == null &&
+                      parrBoard[position.getX(), position.getY() + 2] == null) {
 
                     return true;
 

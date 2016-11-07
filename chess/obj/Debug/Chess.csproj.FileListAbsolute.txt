@@ -9,4 +9,3 @@ C:\Users\Elliot\ConsoleChess\Chess\obj\Debug\Chess.exe
 C:\Users\Elliot\ConsoleChess\Chess\obj\Debug\Chess.pdb
 C:\Users\Elliot\ConsoleChess\Chess\bin\Debug\Chess.exe
 C:\Users\Elliot\ConsoleChess\Chess\bin\Debug\Chess.pdb
-C:\Users\Elliot\ConsoleChess\Chess\obj\Debug\Chess.csprojResolveAssemblyReference.cache
