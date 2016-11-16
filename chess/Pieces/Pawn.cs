@@ -14,6 +14,7 @@ namespace Chess {
         private bool hasMoved;
         private bool isSelected;
         private string strEnPassant;
+        private bool blnMoveTwo;
 
         //Constructor
         public Pawn(bool pblnIsWhite, Position pposPosition) {
@@ -22,6 +23,7 @@ namespace Chess {
             this.hasMoved = false;
             this.isSelected = false;
             this.strEnPassant = "";
+            this.blnMoveTwo = false;
         }
 
         //Returns true if piece is white.
@@ -49,6 +51,10 @@ namespace Chess {
             return strEnPassant;
         }
 
+        public bool GetMoveTwo() {
+            return blnMoveTwo;
+        }
+
         //Sets the piece to selected or not.
         public void SetSelected(bool pblnSelected) {
             isSelected = pblnSelected;
@@ -67,6 +73,10 @@ namespace Chess {
             strEnPassant = pstrEnPassant;
         }
 
+        public void SetMoveTwo(bool pblnMoveTwo) {
+            blnMoveTwo = pblnMoveTwo;
+        }
+
         /// <summary>
         /// Two different decision trees determinant on color of piece, because pawns only move in one direction.
         /// </summary>
@@ -75,16 +85,33 @@ namespace Chess {
         /// <returns>Returns true if the move is valid.</returns>
         public bool ValidMove(Piece[,] parrBoard, Position pposMoveTo) {
             if (isWhite) {
-                if (strEnPassant == "left" || ((pposMoveTo.getX() == (position.getX() - 1) &&
+                //if (pposMoveTo.getX() == (position.getX() - 1) &&
+                //      pposMoveTo.getY() == position.getY() &&
+                //      parrBoard[position.getX() - 1, position.getY()] != null &&
+                //      IsEnemy(parrBoard, pposMoveTo)) {
+                //    strEnPassant = "left";
+                //    //return true;
+                //} else if (pposMoveTo.getX() == (position.getX() + 1) &&
+                //      pposMoveTo.getY() == position.getY() &&
+                //      parrBoard[position.getX() + 1, position.getY()] != null &&
+                //      IsEnemy(parrBoard, pposMoveTo)) {
+                //    strEnPassant = "right";
+                //    //return true;
+                //}
+                CheckEnPassant(parrBoard, pposMoveTo);
+
+                if ((pposMoveTo.getX() == (position.getX() - 1) &&
                     pposMoveTo.getY() == position.getY() - 1) &&
-                    parrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
-                    IsEnemy(parrBoard, pposMoveTo))) {
+                    ((parrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
+                    IsEnemy(parrBoard, pposMoveTo)) ||
+                    strEnPassant == "left")) {
 
                     return true;
-                } else if (strEnPassant == "right" || ((pposMoveTo.getX() == (position.getX() + 1) &&
+                } else if ((pposMoveTo.getX() == (position.getX() + 1) &&
                       pposMoveTo.getY() == position.getY() - 1) &&
-                      parrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
-                      IsEnemy(parrBoard, pposMoveTo))) {
+                      ((parrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
+                      IsEnemy(parrBoard, pposMoveTo)) ||
+                      strEnPassant == "right")) {
 
                     return true;
                 }
@@ -93,16 +120,33 @@ namespace Chess {
                     return true;
                 }
             } else {
-                if (strEnPassant == "left" || ((pposMoveTo.getX() == (position.getX() - 1) &&
+                //if (pposMoveTo.getX() == (position.getX() - 1) &&
+                //       pposMoveTo.getY() == position.getY() &&
+                //       parrBoard[position.getX() - 1, position.getY()] != null &&
+                //       IsEnemy(parrBoard, pposMoveTo)) {
+                //    blnEnPassant = true;
+                //    //return true;
+                //} else if (pposMoveTo.getX() == (position.getX() + 1) &&
+                //      pposMoveTo.getY() == position.getY() &&
+                //      parrBoard[position.getX() + 1, position.getY()] != null &&
+                //      IsEnemy(parrBoard, pposMoveTo)) {
+                //    blnEnPassant = true;
+                //    //return true;
+                //}
+                CheckEnPassant(parrBoard, pposMoveTo);
+
+                if ((pposMoveTo.getX() == (position.getX() - 1) &&
                     pposMoveTo.getY() == position.getY() + 1) &&
-                    parrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
-                    IsEnemy(parrBoard, pposMoveTo))) {
+                    ((parrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
+                    IsEnemy(parrBoard, pposMoveTo)) ||
+                    strEnPassant == "left")) {
 
                     return true;
-                } else if (strEnPassant == "right" || ((pposMoveTo.getX() == (position.getX() + 1) &&
+                } else if ((pposMoveTo.getX() == (position.getX() + 1) &&
                       pposMoveTo.getY() == position.getY() + 1) &&
-                      parrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
-                      IsEnemy(parrBoard, pposMoveTo))) {
+                      ((parrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
+                      IsEnemy(parrBoard, pposMoveTo)) ||
+                      strEnPassant == "right")) {
 
                     return true;
                 }
@@ -112,6 +156,39 @@ namespace Chess {
                 }
             }
             return false;
+        }
+
+        //Checks if en passant is a valid move to the left or right
+        private void CheckEnPassant(Piece[,] parrBoard, Position pposMoveTo) {
+            Pawn castPawnLeft = new Pawn(isWhite, position);
+            Pawn castPawnRight = new Pawn(isWhite, position);
+            if (position.getX() - 1 >= 0 && 
+                parrBoard[position.getX() - 1, position.getY()] != null &&
+                parrBoard[position.getX() - 1, position.getY()].PieceType() == "P") {
+                castPawnLeft = new Pawn(parrBoard[position.getX() - 1, position.getY()].IsWhite() == "W", new Position(position.getX() - 1, position.getY()));
+            } else if ((position.getX() + 1) < 8 && 
+                parrBoard[position.getX() + 1, position.getY()] != null &&
+                parrBoard[position.getX() + 1, position.getY()].PieceType() == "P") {
+                castPawnRight = new Pawn(parrBoard[position.getX() + 1, position.getY()].IsWhite() == "W", new Position(position.getX() + 1, position.getY()));
+            } else {
+                return;
+            }
+
+            if (pposMoveTo.getX() == (position.getX() - 1) &&
+                      pposMoveTo.getY() == position.getY() &&
+                      parrBoard[position.getX() - 1, position.getY()] != null &&
+                      castPawnLeft.blnMoveTwo &&
+                      IsEnemy(parrBoard, pposMoveTo)) {
+                strEnPassant = "left";
+
+            } else if (pposMoveTo.getX() == (position.getX() + 1) &&
+                  pposMoveTo.getY() == position.getY() &&
+                  parrBoard[position.getX() + 1, position.getY()] != null &&
+                  castPawnRight.blnMoveTwo &&
+                  IsEnemy(parrBoard, pposMoveTo)) {
+                strEnPassant = "right";
+
+            }
         }
 
         //Checks if the space in front of the pawn is empty. Returns true if the space is empty.
@@ -130,7 +207,7 @@ namespace Chess {
                     Math.Abs(pposPosition.getY() - position.getY()) < 3 &&
                     parrBoard[position.getX(), position.getY() - 1] == null &&
                     parrBoard[position.getX(), position.getY() - 2] == null) {
-
+                    //blnMoveTwo = true;
                     return true;
 
                 }
@@ -148,7 +225,7 @@ namespace Chess {
                       Math.Abs(pposPosition.getY() - position.getY()) < 3 &&
                       parrBoard[position.getX(), position.getY() + 1] == null &&
                       parrBoard[position.getX(), position.getY() + 2] == null) {
-
+                    //blnMoveTwo = true;
                     return true;
 
                 }

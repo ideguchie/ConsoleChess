@@ -197,16 +197,28 @@ namespace Chess {
 
         //Moves a given piece from one space to another if the move is valid. Returns true if a move was made.
         public bool SetPiece(Position pposPosition, Position pposMoveTo) {
-            if (arrBoard[pposPosition.getX(), pposPosition.getY()].ValidMove(arrBoard, pposMoveTo)) {
-                arrBoard[pposMoveTo.getX(), pposMoveTo.getY()] = null;
-                arrBoard[pposPosition.getX(), pposPosition.getY()].SetPosition(pposMoveTo);
-                arrBoard[pposMoveTo.getX(), pposMoveTo.getY()] = arrBoard[pposPosition.getX(), pposPosition.getY()];
-                arrBoard[pposPosition.getX(), pposPosition.getY()] = null;
-                arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].SetMoved(true);
-                CheckPromotion(pposMoveTo, arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].IsWhite() == "W");
-                EnPassant(pposPosition, pposMoveTo);
-                blnWhiteTurn = !blnWhiteTurn;
-                return true;
+            if ((arrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() == "W" && blnWhiteTurn) ||
+                (arrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() != "W" && !blnWhiteTurn)) {
+
+                if (arrBoard[pposPosition.getX(), pposPosition.getY()].ValidMove(arrBoard, pposMoveTo)) {
+
+                    arrBoard[pposMoveTo.getX(), pposMoveTo.getY()] = null;
+                    arrBoard[pposPosition.getX(), pposPosition.getY()].SetPosition(pposMoveTo);
+                    arrBoard[pposMoveTo.getX(), pposMoveTo.getY()] = arrBoard[pposPosition.getX(), pposPosition.getY()];
+                    arrBoard[pposPosition.getX(), pposPosition.getY()] = null;
+                    arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].SetMoved(true);
+
+                    if (arrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null &&
+                        arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].PieceType() == "P") {
+                        CheckPromotion(pposMoveTo, arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].IsWhite() == "W");
+                        EnPassant(pposPosition, pposMoveTo);
+                    }
+
+                    blnWhiteTurn = !blnWhiteTurn;
+                    return true;
+
+                }
+
             }
             return false;
         }
@@ -214,114 +226,143 @@ namespace Chess {
         //Sets a piece on the board. (Used for promotion)
         private void CheckPromotion(Position pposPosition, bool pblnIsWhite) {
             if (pposPosition.getY() == 0 || pposPosition.getY() == 7) {
-                if (arrBoard[pposPosition.getX(), pposPosition.getY()].PieceType() == "P") {
-                    string strPieceType = "";
-                    ChoosePiece(ref strPieceType);
-                    if (pblnIsWhite) {
-                        arrBoard[pposPosition.getX(), pposPosition.getY()] = null;
-                        switch (strPieceType) {
-                            //    case "Rook":
-                            //        arrBoard[pposPosition.getX(), pposPosition.getY()] = new Rook();
-                            //        break;
-                            case "Knight":
-                                arrBoard[pposPosition.getX(), pposPosition.getY()] = new Knight(pblnIsWhite, pposPosition);
-                                break;
-                                //    case "Bishop":
-                                //        arrBoard[pposPosition.getX(), pposPosition.getY()] = new Bishop();
-                                //        break;
-                                //    default:
-                                //        arrBoard[pposPosition.getX(), pposPosition.getY()] = new Queen();
-                                //        break;
-                        }
-                    } else {
-                        arrBoard[pposPosition.getX(), pposPosition.getY()] = null;
-                        switch (strPieceType) {
-                            //    case "Rook":
-                            //        arrBoard[pposPosition.getX(), pposPosition.getY()] = new Rook();
-                            //        break;
-                            case "Knight":
-                                arrBoard[pposPosition.getX(), pposPosition.getY()] = new Knight(pblnIsWhite, pposPosition);
-                                break;
-                                //    case "Bishop":
-                                //        arrBoard[pposPosition.getX(), pposPosition.getY()] = new Bishop();
-                                //        break;
-                                //    default:
-                                //        arrBoard[pposPosition.getX(), pposPosition.getY()] = new Queen();
-                                //        break;
-                        }
+                string strPieceType = "";
+                ChoosePiece(ref strPieceType);
+                if (pblnIsWhite) {
+                    arrBoard[pposPosition.getX(), pposPosition.getY()] = null;
+                    switch (strPieceType) {
+                        case "Rook":
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Rook();
+                            break;
+                        case "Knight":
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Knight(pblnIsWhite, pposPosition);
+                            break;
+                        case "Bishop":
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Bishop();
+                            break;
+                        default:
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Queen();
+                            break;
+                    }
+                } else {
+                    arrBoard[pposPosition.getX(), pposPosition.getY()] = null;
+                    switch (strPieceType) {
+                        case "Rook":
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Rook();
+                            break;
+                        case "Knight":
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Knight(pblnIsWhite, pposPosition);
+                            break;
+                        case "Bishop":
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Bishop();
+                            break;
+                        default:
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Queen();
+                            break;
                     }
                 }
             }
         }
 
-        //Invalidates old En Passant, checks for new En Passant
+        //Invalidates Pawn indicators, checks for valid En Passant
         private void EnPassant(Position pposPosition, Position pposMoveTo) {
+            if (pposPosition.getX() - 1 >= 0 &&
+                arrBoard[pposPosition.getX() - 1, pposPosition.getY()] != null) {
+                Pawn castPawn = new Pawn(arrBoard[pposPosition.getX() - 1, pposPosition.getY()].IsWhite() == "W", new Position(pposPosition.getX() - 1, pposPosition.getY()));
+                if (castPawn.GetEnPassant() == "left") {
+                    arrBoard[pposPosition.getX() - 1, pposPosition.getY()] = null;
+                }
+            } else if ((pposPosition.getX() + 1) < 8 &&
+                        arrBoard[pposPosition.getX() + 1, pposPosition.getY()] != null) {
+                Pawn castPawn = new Pawn(arrBoard[pposPosition.getX() + 1, pposPosition.getY()].IsWhite() == "W", new Position(pposPosition.getX() + 1, pposPosition.getY()));
+                if (castPawn.GetEnPassant() == "right") {
+                    arrBoard[pposPosition.getX() + 1, pposPosition.getY()] = null;
+                }
+            }
+
             //if it was just whites move, invalidate white en passant
             if (blnWhiteTurn) {
                 for (int y = 0; y < 8; y++) {
                     for (int x = 0; x < 8; x++) {
-                        if (arrBoard[x, y] != null && arrBoard[x, y].PieceType() == "P" && arrBoard[x, y].IsWhite() == "W") {
-                            CPawn(arrBoard[x, y], arrBoard[x, y].IsWhite() == "W", new Position(x, y)).SetEnPassant("");
+                        if (arrBoard[x, y] != null &&
+                            arrBoard[x, y].PieceType() == "P" &&
+                            arrBoard[x, y].IsWhite() == "W") {
+                            Pawn castPawn = new Pawn(arrBoard[x, y].IsWhite() == "W", new Position(x, y));
+                            castPawn.SetEnPassant("");
+                            castPawn.SetMoveTwo(false);
                         }
                     }
                 }
             } else {
                 for (int y = 0; y < 8; y++) {
                     for (int x = 0; x < 8; x++) {
-                        if (arrBoard[x, y] != null && arrBoard[x, y].PieceType() == "P" && arrBoard[x, y].IsWhite() != "W") {
-                            CPawn(arrBoard[x, y], arrBoard[x, y].IsWhite() == "W", new Position(x, y)).SetEnPassant("");
+                        if (arrBoard[x, y] != null &&
+                            arrBoard[x, y].PieceType() == "P" &&
+                            arrBoard[x, y].IsWhite() != "W") {
+                            Pawn castPawn = new Pawn(arrBoard[x, y].IsWhite() == "W", new Position(x, y));
+                            castPawn.SetEnPassant("");
+                            castPawn.SetMoveTwo(false);
                         }
                     }
                 }
             }
-            //check last move for en passant
-            if (arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].PieceType() == "P") {
-                if (arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].IsWhite() == "W") {
-                    if ((pposPosition.getY() - pposMoveTo.getY()) == 2) {
-                        if (pposMoveTo.getX() - 1 >= 0 && arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()] != null) {
-                            CPawn(arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()],
-                                arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()].IsWhite() == "W",
-                                new Position(pposMoveTo.getX() - 1, pposMoveTo.getY())).SetEnPassant("left");
-                        }
-                        if (pposMoveTo.getX() + 1 < 8 && arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()] != null) {
-                            CPawn(arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()],
-                                arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()].IsWhite() == "W",
-                                new Position(pposMoveTo.getX() + 1, pposMoveTo.getY())).SetEnPassant("right");
-                        }
-                    }
-                } else {
-                    if ((pposMoveTo.getY() - pposPosition.getY()) == 2) {
-                        if (pposMoveTo.getX() - 1 >= 0 && arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()] != null) {
-                            CPawn(arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()],
-                                arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()].IsWhite() == "W",
-                                new Position(pposMoveTo.getX() - 1, pposMoveTo.getY())).SetEnPassant("left");
-                        }
-                        if (pposMoveTo.getX() + 1 < 8 && arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()] != null) {
-                            CPawn(arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()],
-                                arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()].IsWhite() == "W",
-                                new Position(pposMoveTo.getX() + 1, pposMoveTo.getY())).SetEnPassant("right");
-                        }
-                    }
-                }
+
+            if (Math.Abs(pposPosition.getY() - pposMoveTo.getY()) == 2 &&
+                pposPosition.getX() == pposMoveTo.getX()) {
+                Pawn castPawn = new Pawn(arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].IsWhite() == "W", pposMoveTo);
+                castPawn.SetMoveTwo(true);
             }
+            ////check last move for en passant
+            //if (arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].PieceType() == "P") {
+            //    if (arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].IsWhite() == "W") {
+            //        if ((pposPosition.getY() - pposMoveTo.getY()) == 2) {
+            //            if (pposMoveTo.getX() - 1 >= 0 && arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()] != null) {
+            //                CPawn(arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()],
+            //                    arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()].IsWhite() == "W",
+            //                    new Position(pposMoveTo.getX() - 1, pposMoveTo.getY())).SetEnPassant("left");
+            //            }
+            //            if (pposMoveTo.getX() + 1 < 8 && arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()] != null) {
+            //                CPawn(arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()],
+            //                    arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()].IsWhite() == "W",
+            //                    new Position(pposMoveTo.getX() + 1, pposMoveTo.getY())).SetEnPassant("right");
+            //            }
+            //        }
+            //    } else {
+            //        if ((pposMoveTo.getY() - pposPosition.getY()) == 2) {
+            //            if (pposMoveTo.getX() - 1 >= 0 && arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()] != null) {
+            //                CPawn(arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()],
+            //                    arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()].IsWhite() == "W",
+            //                    new Position(pposMoveTo.getX() - 1, pposMoveTo.getY())).SetEnPassant("left");
+            //            }
+            //            if (pposMoveTo.getX() + 1 < 8 && arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()] != null) {
+            //                CPawn(arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()],
+            //                    arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()].IsWhite() == "W",
+            //                    new Position(pposMoveTo.getX() + 1, pposMoveTo.getY())).SetEnPassant("right");
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         //Opens modal window for choosing promotion piece
         private void ChoosePiece(ref string pstrPieceType) {
             bool valid = false;
+            Console.WriteLine("Choose a piece: Q, B, K, R.");
             while (!valid) {
-                if(Console.ReadLine() == "k") {
+                if (Console.ReadLine() == "k") {
                     valid = true;
                     pstrPieceType = "Knight";
+                } else if (Console.ReadLine() == "r") {
+                    valid = true;
+                    pstrPieceType = "Rook";
+                } else if (Console.ReadLine() == "q") {
+                    valid = true;
+                    pstrPieceType = "Queen";
+                } else if (Console.ReadLine() == "b") {
+                    valid = true;
+                    pstrPieceType = "Bishop";
                 }
             }
-            //return "fail";
-        }
-
-        //Cast Piece to Pawn
-        private Pawn CPawn(Piece ppcePiece, bool pblnIsWhite, Position pposPosition) {
-            Pawn castPawn = new Pawn(pblnIsWhite, pposPosition);
-            return castPawn;
         }
 
         //Sets the initial state of the board.
