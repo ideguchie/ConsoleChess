@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Chess {
     /// <summary>
@@ -20,7 +16,7 @@ namespace Chess {
             SetBoard();
         }
 
-        #region "Text Based Functions"
+        #region Text Based Functions
         //Prints the state of the board.
         public void PrintBoard(Position pposSelected) {
             for (int y = 0; y < 8; y++) {
@@ -183,22 +179,20 @@ namespace Chess {
         }
         #endregion
 
-        //public Piece SelectPiece(Position pposPosition)
-        //{
-        //    if(arrBoard[pposPosition.getX(), pposPosition.getY()] != null)
-        //    {
-        //        arrBoard[pposPosition.getX(), pposPosition.getY()].SetSelected(true);
-        //        PrintBoard();
-        //        //return arrBoard[pintPosition.getX(), pintPosition.getY()];
-        //    }
+        public Piece SelectPiece(Position pposPosition) {
+            if (arrBoard[pposPosition.getX(), pposPosition.getY()] != null) {
+                arrBoard[pposPosition.getX(), pposPosition.getY()].SetSelected(true);
+                //PrintBoard();
+                return arrBoard[pposPosition.getX(), pposPosition.getY()];
+            }
 
-        //    return null;
-        //}
+            return null;
+        }
 
         //Moves a given piece from one space to another if the move is valid. Returns true if a move was made.
         public bool SetPiece(Position pposPosition, Position pposMoveTo) {
-            if ((arrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() == "W" && blnWhiteTurn) ||
-                (arrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() != "W" && !blnWhiteTurn)) {
+            //if ((arrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() == "W" && blnWhiteTurn) ||
+            //    (arrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() != "W" && !blnWhiteTurn)) {
 
                 if (arrBoard[pposPosition.getX(), pposPosition.getY()].ValidMove(arrBoard, pposMoveTo)) {
 
@@ -219,7 +213,7 @@ namespace Chess {
 
                 }
 
-            }
+            //}
             return false;
         }
 
@@ -232,32 +226,32 @@ namespace Chess {
                     arrBoard[pposPosition.getX(), pposPosition.getY()] = null;
                     switch (strPieceType) {
                         case "Rook":
-                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Rook();
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Rook(pblnIsWhite, pposPosition);
                             break;
                         case "Knight":
                             arrBoard[pposPosition.getX(), pposPosition.getY()] = new Knight(pblnIsWhite, pposPosition);
                             break;
                         case "Bishop":
-                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Bishop();
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Bishop(pblnIsWhite, pposPosition);
                             break;
                         default:
-                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Queen();
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Queen(pblnIsWhite, pposPosition);
                             break;
                     }
                 } else {
                     arrBoard[pposPosition.getX(), pposPosition.getY()] = null;
                     switch (strPieceType) {
                         case "Rook":
-                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Rook();
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Rook(pblnIsWhite, pposPosition);
                             break;
                         case "Knight":
                             arrBoard[pposPosition.getX(), pposPosition.getY()] = new Knight(pblnIsWhite, pposPosition);
                             break;
                         case "Bishop":
-                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Bishop();
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Bishop(pblnIsWhite, pposPosition);
                             break;
                         default:
-                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Queen();
+                            arrBoard[pposPosition.getX(), pposPosition.getY()] = new Queen(pblnIsWhite, pposPosition);
                             break;
                     }
                 }
@@ -268,13 +262,14 @@ namespace Chess {
         private void EnPassant(Position pposPosition, Position pposMoveTo) {
             if (pposPosition.getX() - 1 >= 0 &&
                 arrBoard[pposPosition.getX() - 1, pposPosition.getY()] != null) {
-                Pawn castPawn = new Pawn(arrBoard[pposPosition.getX() - 1, pposPosition.getY()].IsWhite() == "W", new Position(pposPosition.getX() - 1, pposPosition.getY()));
+                Pawn castPawn = (Pawn)arrBoard[pposMoveTo.getX(), pposMoveTo.getY()];
                 if (castPawn.GetEnPassant() == "left") {
                     arrBoard[pposPosition.getX() - 1, pposPosition.getY()] = null;
                 }
-            } else if ((pposPosition.getX() + 1) < 8 &&
+            }
+            if ((pposPosition.getX() + 1) < 8 &&
                         arrBoard[pposPosition.getX() + 1, pposPosition.getY()] != null) {
-                Pawn castPawn = new Pawn(arrBoard[pposPosition.getX() + 1, pposPosition.getY()].IsWhite() == "W", new Position(pposPosition.getX() + 1, pposPosition.getY()));
+                Pawn castPawn = (Pawn)arrBoard[pposMoveTo.getX(), pposMoveTo.getY()];
                 if (castPawn.GetEnPassant() == "right") {
                     arrBoard[pposPosition.getX() + 1, pposPosition.getY()] = null;
                 }
@@ -287,7 +282,7 @@ namespace Chess {
                         if (arrBoard[x, y] != null &&
                             arrBoard[x, y].PieceType() == "P" &&
                             arrBoard[x, y].IsWhite() == "W") {
-                            Pawn castPawn = new Pawn(arrBoard[x, y].IsWhite() == "W", new Position(x, y));
+                            Pawn castPawn = (Pawn)arrBoard[x, y];
                             castPawn.SetEnPassant("");
                             castPawn.SetMoveTwo(false);
                         }
@@ -299,7 +294,7 @@ namespace Chess {
                         if (arrBoard[x, y] != null &&
                             arrBoard[x, y].PieceType() == "P" &&
                             arrBoard[x, y].IsWhite() != "W") {
-                            Pawn castPawn = new Pawn(arrBoard[x, y].IsWhite() == "W", new Position(x, y));
+                            Pawn castPawn = (Pawn)arrBoard[x, y];
                             castPawn.SetEnPassant("");
                             castPawn.SetMoveTwo(false);
                         }
@@ -309,39 +304,9 @@ namespace Chess {
 
             if (Math.Abs(pposPosition.getY() - pposMoveTo.getY()) == 2 &&
                 pposPosition.getX() == pposMoveTo.getX()) {
-                Pawn castPawn = new Pawn(arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].IsWhite() == "W", pposMoveTo);
+                Pawn castPawn = (Pawn)arrBoard[pposMoveTo.getX(), pposMoveTo.getY()];
                 castPawn.SetMoveTwo(true);
             }
-            ////check last move for en passant
-            //if (arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].PieceType() == "P") {
-            //    if (arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].IsWhite() == "W") {
-            //        if ((pposPosition.getY() - pposMoveTo.getY()) == 2) {
-            //            if (pposMoveTo.getX() - 1 >= 0 && arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()] != null) {
-            //                CPawn(arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()],
-            //                    arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()].IsWhite() == "W",
-            //                    new Position(pposMoveTo.getX() - 1, pposMoveTo.getY())).SetEnPassant("left");
-            //            }
-            //            if (pposMoveTo.getX() + 1 < 8 && arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()] != null) {
-            //                CPawn(arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()],
-            //                    arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()].IsWhite() == "W",
-            //                    new Position(pposMoveTo.getX() + 1, pposMoveTo.getY())).SetEnPassant("right");
-            //            }
-            //        }
-            //    } else {
-            //        if ((pposMoveTo.getY() - pposPosition.getY()) == 2) {
-            //            if (pposMoveTo.getX() - 1 >= 0 && arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()] != null) {
-            //                CPawn(arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()],
-            //                    arrBoard[pposMoveTo.getX() - 1, pposMoveTo.getY()].IsWhite() == "W",
-            //                    new Position(pposMoveTo.getX() - 1, pposMoveTo.getY())).SetEnPassant("left");
-            //            }
-            //            if (pposMoveTo.getX() + 1 < 8 && arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()] != null) {
-            //                CPawn(arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()],
-            //                    arrBoard[pposMoveTo.getX() + 1, pposMoveTo.getY()].IsWhite() == "W",
-            //                    new Position(pposMoveTo.getX() + 1, pposMoveTo.getY())).SetEnPassant("right");
-            //            }
-            //        }
-            //    }
-            //}
         }
 
         //Opens modal window for choosing promotion piece
@@ -378,6 +343,13 @@ namespace Chess {
             Position posWhitePawn7 = new Position(6, 6);
             Position posWhitePawn8 = new Position(7, 6);
             Position posWhiteQKnight = new Position(1, 7);
+            Position posWhiteKKnight = new Position(6, 7);
+            Position posWhiteKBishop = new Position(5, 7);
+            Position posWhiteQBishop = new Position(2, 7);
+            Position posWhiteKRook = new Position(7, 7);
+            Position posWhiteQRook = new Position(0, 7);
+            Position posWhiteQueen = new Position(3, 7);
+            Position posWhiteKing = new Position(4, 7);
 
             //inital black piece positionssitions
             Position posBlackPawn1 = new Position(0, 1);
@@ -389,6 +361,13 @@ namespace Chess {
             Position posBlackPawn7 = new Position(6, 1);
             Position posBlackPawn8 = new Position(7, 1);
             Position posBlackQKnight = new Position(6, 0);
+            Position posBlackKKnight = new Position(1, 0);
+            Position posBlackQBishop = new Position(5, 0);
+            Position posBlackKBishop = new Position(2, 0);
+            Position posBlackQRook = new Position(7, 0);
+            Position posBlackKRook = new Position(0, 0);
+            Position posBlackQueen = new Position(3, 0);
+            Position posBlackKing = new Position(4, 0);
 
             //white pieces
             Pawn pwnWhite1 = new Pawn(true, posWhitePawn1);
@@ -400,6 +379,13 @@ namespace Chess {
             Pawn pwnWhite7 = new Pawn(true, posWhitePawn7);
             Pawn pwnWhite8 = new Pawn(true, posWhitePawn8);
             Knight kntWhiteQKnight = new Knight(true, posWhiteQKnight);
+            Knight kntWhiteKKnight = new Knight(true, posWhiteKKnight);
+            Bishop bisWhiteQBishop = new Bishop(true, posWhiteQBishop);
+            Bishop bisWhiteKBishop = new Bishop(true, posWhiteKBishop);
+            Rook rokWhiteQRook = new Rook(true, posWhiteQRook);
+            Rook rokWhiteKRook = new Rook(true, posWhiteKRook);
+            Queen queWhiteQueen = new Queen(true, posWhiteQueen);
+            King kngWhiteKing = new King(true, posWhiteKing);
 
             //black pieces
             Pawn pwnBlack1 = new Chess.Pawn(false, posBlackPawn1);
@@ -411,6 +397,13 @@ namespace Chess {
             Pawn pwnBlack7 = new Chess.Pawn(false, posBlackPawn7);
             Pawn pwnBlack8 = new Chess.Pawn(false, posBlackPawn8);
             Knight kntBlackQKnight = new Knight(false, posBlackQKnight);
+            Knight kntBlackKKnight = new Knight(false, posBlackKKnight);
+            Bishop bisBlackQBishop = new Bishop(false, posBlackQBishop);
+            Bishop bisBlackKBishop = new Bishop(false, posBlackKBishop);
+            Rook rokBlackQRook = new Rook(false, posBlackQRook);
+            Rook rokBlackKRook = new Rook(false, posBlackKRook);
+            Queen queBlackQueen = new Queen(false, posBlackQueen);
+            King kngBlackKing = new King(false, posBlackKing);
 
             //set white pieces on board
             arrBoard[posWhitePawn1.getX(), posWhitePawn1.getY()] = pwnWhite1;
@@ -422,6 +415,13 @@ namespace Chess {
             arrBoard[posWhitePawn7.getX(), posWhitePawn7.getY()] = pwnWhite7;
             arrBoard[posWhitePawn8.getX(), posWhitePawn8.getY()] = pwnWhite8;
             arrBoard[posWhiteQKnight.getX(), posWhiteQKnight.getY()] = kntWhiteQKnight;
+            arrBoard[posWhiteKKnight.getX(), posWhiteKKnight.getY()] = kntWhiteKKnight;
+            arrBoard[posWhiteQBishop.getX(), posWhiteQBishop.getY()] = bisWhiteQBishop;
+            arrBoard[posWhiteKBishop.getX(), posWhiteKBishop.getY()] = bisWhiteKBishop;
+            arrBoard[posWhiteQRook.getX(), posWhiteQRook.getY()] = rokWhiteQRook;
+            arrBoard[posWhiteKRook.getX(), posWhiteKRook.getY()] = rokWhiteKRook;
+            arrBoard[posWhiteQueen.getX(), posWhiteQueen.getY()] = queWhiteQueen;
+            arrBoard[posWhiteKing.getX(), posWhiteKing.getY()] = kngWhiteKing;
 
             //set black pieces on board
             arrBoard[posBlackPawn1.getX(), posBlackPawn1.getY()] = pwnBlack1;
@@ -433,6 +433,13 @@ namespace Chess {
             arrBoard[posBlackPawn7.getX(), posBlackPawn7.getY()] = pwnBlack7;
             arrBoard[posBlackPawn8.getX(), posBlackPawn8.getY()] = pwnBlack8;
             arrBoard[posBlackQKnight.getX(), posBlackQKnight.getY()] = kntBlackQKnight;
+            arrBoard[posBlackKKnight.getX(), posBlackKKnight.getY()] = kntBlackKKnight;
+            arrBoard[posBlackQBishop.getX(), posBlackQBishop.getY()] = bisBlackQBishop;
+            arrBoard[posBlackKBishop.getX(), posBlackKBishop.getY()] = bisBlackKBishop;
+            arrBoard[posBlackQRook.getX(), posBlackQRook.getY()] = rokBlackQRook;
+            arrBoard[posBlackKRook.getX(), posBlackKRook.getY()] = rokBlackKRook;
+            arrBoard[posBlackQueen.getX(), posBlackQueen.getY()] = queBlackQueen;
+            arrBoard[posBlackKing.getX(), posBlackKing.getY()] = kngBlackKing;
         }
     }
 }

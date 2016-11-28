@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Chess {
     /// <summary>
@@ -85,19 +81,6 @@ namespace Chess {
         /// <returns>Returns true if the move is valid.</returns>
         public bool ValidMove(Piece[,] parrBoard, Position pposMoveTo) {
             if (isWhite) {
-                //if (pposMoveTo.getX() == (position.getX() - 1) &&
-                //      pposMoveTo.getY() == position.getY() &&
-                //      parrBoard[position.getX() - 1, position.getY()] != null &&
-                //      IsEnemy(parrBoard, pposMoveTo)) {
-                //    strEnPassant = "left";
-                //    //return true;
-                //} else if (pposMoveTo.getX() == (position.getX() + 1) &&
-                //      pposMoveTo.getY() == position.getY() &&
-                //      parrBoard[position.getX() + 1, position.getY()] != null &&
-                //      IsEnemy(parrBoard, pposMoveTo)) {
-                //    strEnPassant = "right";
-                //    //return true;
-                //}
                 CheckEnPassant(parrBoard, pposMoveTo);
 
                 if ((pposMoveTo.getX() == (position.getX() - 1) &&
@@ -120,19 +103,6 @@ namespace Chess {
                     return true;
                 }
             } else {
-                //if (pposMoveTo.getX() == (position.getX() - 1) &&
-                //       pposMoveTo.getY() == position.getY() &&
-                //       parrBoard[position.getX() - 1, position.getY()] != null &&
-                //       IsEnemy(parrBoard, pposMoveTo)) {
-                //    blnEnPassant = true;
-                //    //return true;
-                //} else if (pposMoveTo.getX() == (position.getX() + 1) &&
-                //      pposMoveTo.getY() == position.getY() &&
-                //      parrBoard[position.getX() + 1, position.getY()] != null &&
-                //      IsEnemy(parrBoard, pposMoveTo)) {
-                //    blnEnPassant = true;
-                //    //return true;
-                //}
                 CheckEnPassant(parrBoard, pposMoveTo);
 
                 if ((pposMoveTo.getX() == (position.getX() - 1) &&
@@ -160,32 +130,35 @@ namespace Chess {
 
         //Checks if en passant is a valid move to the left or right
         private void CheckEnPassant(Piece[,] parrBoard, Position pposMoveTo) {
-            Pawn castPawnLeft = new Pawn(isWhite, position);
-            Pawn castPawnRight = new Pawn(isWhite, position);
-            if (position.getX() - 1 >= 0 && 
+            Pawn castPawnLeft = null;
+            Pawn castPawnRight = null;
+            if (position.getX() - 1 >= 0 &&
                 parrBoard[position.getX() - 1, position.getY()] != null &&
-                parrBoard[position.getX() - 1, position.getY()].PieceType() == "P") {
-                castPawnLeft = new Pawn(parrBoard[position.getX() - 1, position.getY()].IsWhite() == "W", new Position(position.getX() - 1, position.getY()));
-            } else if ((position.getX() + 1) < 8 && 
-                parrBoard[position.getX() + 1, position.getY()] != null &&
-                parrBoard[position.getX() + 1, position.getY()].PieceType() == "P") {
-                castPawnRight = new Pawn(parrBoard[position.getX() + 1, position.getY()].IsWhite() == "W", new Position(position.getX() + 1, position.getY()));
-            } else {
-                return;
+                parrBoard[position.getX() - 1, position.getY()].PieceType() == "P" &&
+                parrBoard[position.getX() - 1, position.getY()].IsWhite() != parrBoard[position.getX(), position.getY()].IsWhite()) {
+                castPawnLeft = (Pawn)parrBoard[position.getX() - 1, position.getY()];
             }
+            if ((position.getX() + 1) < 8 &&
+                parrBoard[position.getX() + 1, position.getY()] != null &&
+                parrBoard[position.getX() + 1, position.getY()].PieceType() == "P" &&
+                parrBoard[position.getX() + 1, position.getY()].IsWhite() != parrBoard[position.getX(), position.getY()].IsWhite()) {
+                castPawnRight = (Pawn)parrBoard[position.getX() + 1, position.getY()];
+            }
+            if (castPawnLeft == null && castPawnRight == null) return;
+
+            Position posEnPassantLeft = new Position(position.getX() - 1, position.getY());
+            Position posEnPassantRight = new Position(position.getX() + 1, position.getY());
 
             if (pposMoveTo.getX() == (position.getX() - 1) &&
-                      pposMoveTo.getY() == position.getY() &&
-                      parrBoard[position.getX() - 1, position.getY()] != null &&
+                      parrBoard[posEnPassantLeft.getX(), posEnPassantLeft.getY()] != null &&
                       castPawnLeft.blnMoveTwo &&
-                      IsEnemy(parrBoard, pposMoveTo)) {
+                      IsEnemy(parrBoard, posEnPassantLeft)) {
                 strEnPassant = "left";
 
             } else if (pposMoveTo.getX() == (position.getX() + 1) &&
-                  pposMoveTo.getY() == position.getY() &&
-                  parrBoard[position.getX() + 1, position.getY()] != null &&
+                  parrBoard[posEnPassantRight.getX(), posEnPassantRight.getY()] != null &&
                   castPawnRight.blnMoveTwo &&
-                  IsEnemy(parrBoard, pposMoveTo)) {
+                  IsEnemy(parrBoard, posEnPassantRight)) {
                 strEnPassant = "right";
 
             }
@@ -207,7 +180,7 @@ namespace Chess {
                     Math.Abs(pposPosition.getY() - position.getY()) < 3 &&
                     parrBoard[position.getX(), position.getY() - 1] == null &&
                     parrBoard[position.getX(), position.getY() - 2] == null) {
-                    //blnMoveTwo = true;
+
                     return true;
 
                 }
@@ -225,7 +198,7 @@ namespace Chess {
                       Math.Abs(pposPosition.getY() - position.getY()) < 3 &&
                       parrBoard[position.getX(), position.getY() + 1] == null &&
                       parrBoard[position.getX(), position.getY() + 2] == null) {
-                    //blnMoveTwo = true;
+
                     return true;
 
                 }

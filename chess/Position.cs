@@ -30,16 +30,12 @@ namespace Chess {
 
         //Sets the x coordinate if it exists on the board.
         public void setX(int x) {
-            if (x >= 0 && x < 8) {
                 this.x = x;
-            }
         }
 
         //Sets the y coordinate if it exists on the board.
         public void setY(int y) {
-            if (x >= 0 && x < 8) {
                 this.y = y;
-            }
         }
     }
 }
