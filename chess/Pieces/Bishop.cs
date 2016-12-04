@@ -44,16 +44,10 @@
         }
 
         public bool ValidMove(Piece[,] parrBoard, Position pposMoveTo) {
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, -1)) {
-                return true;
-            }
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, -1)) {
-                return true;
-            }
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, 1)) {
-                return true;
-            }
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, 1)) {
+            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, 1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, 1)) {
                 return true;
             }
             return false;

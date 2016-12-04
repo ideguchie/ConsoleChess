@@ -179,6 +179,10 @@ namespace Chess {
         }
         #endregion
 
+        public bool GetWhiteTurn() {
+            return blnWhiteTurn;
+        }
+
         public Piece SelectPiece(Position pposPosition) {
             if (arrBoard[pposPosition.getX(), pposPosition.getY()] != null) {
                 arrBoard[pposPosition.getX(), pposPosition.getY()].SetSelected(true);
@@ -191,10 +195,13 @@ namespace Chess {
 
         //Moves a given piece from one space to another if the move is valid. Returns true if a move was made.
         public bool SetPiece(Position pposPosition, Position pposMoveTo) {
-            //if ((arrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() == "W" && blnWhiteTurn) ||
-            //    (arrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() != "W" && !blnWhiteTurn)) {
+            if ((arrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() == "W" && blnWhiteTurn) ||
+                (arrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() != "W" && !blnWhiteTurn)) {
 
-                if (arrBoard[pposPosition.getX(), pposPosition.getY()].ValidMove(arrBoard, pposMoveTo)) {
+                if ((arrBoard[pposPosition.getX(), pposPosition.getY()].PieceType() != "K" &&
+            arrBoard[pposPosition.getX(), pposPosition.getY()].ValidMove(arrBoard, pposMoveTo)) ||
+            (arrBoard[pposPosition.getX(), pposPosition.getY()].PieceType() == "K" &&
+            ((King)arrBoard[pposPosition.getX(), pposPosition.getY()]).ValidMove(arrBoard, pposMoveTo, true))) {
 
                     arrBoard[pposMoveTo.getX(), pposMoveTo.getY()] = null;
                     arrBoard[pposPosition.getX(), pposPosition.getY()].SetPosition(pposMoveTo);
@@ -206,6 +213,8 @@ namespace Chess {
                         arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].PieceType() == "P") {
                         CheckPromotion(pposMoveTo, arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].IsWhite() == "W");
                         EnPassant(pposPosition, pposMoveTo);
+                    } else {
+                        InvalidateEnPassant();
                     }
 
                     blnWhiteTurn = !blnWhiteTurn;
@@ -213,8 +222,37 @@ namespace Chess {
 
                 }
 
-            //}
+            }
             return false;
+        }
+
+        private void InvalidateEnPassant() {
+            //if it was just whites move, invalidate white en passant
+            if (blnWhiteTurn) {
+                for (int y = 0; y < 8; y++) {
+                    for (int x = 0; x < 8; x++) {
+                        if (arrBoard[x, y] != null &&
+                            arrBoard[x, y].PieceType() == "P" &&
+                            arrBoard[x, y].IsWhite() != "W") {
+                            Pawn castPawn = (Pawn)arrBoard[x, y];
+                            castPawn.SetEnPassant("");
+                            castPawn.SetMoveTwo(false);
+                        }
+                    }
+                }
+            } else {
+                for (int y = 0; y < 8; y++) {
+                    for (int x = 0; x < 8; x++) {
+                        if (arrBoard[x, y] != null &&
+                            arrBoard[x, y].PieceType() == "P" &&
+                            arrBoard[x, y].IsWhite() == "W") {
+                            Pawn castPawn = (Pawn)arrBoard[x, y];
+                            castPawn.SetEnPassant("");
+                            castPawn.SetMoveTwo(false);
+                        }
+                    }
+                }
+            }
         }
 
         //Sets a piece on the board. (Used for promotion)
@@ -222,6 +260,7 @@ namespace Chess {
             if (pposPosition.getY() == 0 || pposPosition.getY() == 7) {
                 string strPieceType = "";
                 ChoosePiece(ref strPieceType);
+                //can probably be one switch since the color is set by boolean
                 if (pblnIsWhite) {
                     arrBoard[pposPosition.getX(), pposPosition.getY()] = null;
                     switch (strPieceType) {
@@ -275,32 +314,7 @@ namespace Chess {
                 }
             }
 
-            //if it was just whites move, invalidate white en passant
-            if (blnWhiteTurn) {
-                for (int y = 0; y < 8; y++) {
-                    for (int x = 0; x < 8; x++) {
-                        if (arrBoard[x, y] != null &&
-                            arrBoard[x, y].PieceType() == "P" &&
-                            arrBoard[x, y].IsWhite() == "W") {
-                            Pawn castPawn = (Pawn)arrBoard[x, y];
-                            castPawn.SetEnPassant("");
-                            castPawn.SetMoveTwo(false);
-                        }
-                    }
-                }
-            } else {
-                for (int y = 0; y < 8; y++) {
-                    for (int x = 0; x < 8; x++) {
-                        if (arrBoard[x, y] != null &&
-                            arrBoard[x, y].PieceType() == "P" &&
-                            arrBoard[x, y].IsWhite() != "W") {
-                            Pawn castPawn = (Pawn)arrBoard[x, y];
-                            castPawn.SetEnPassant("");
-                            castPawn.SetMoveTwo(false);
-                        }
-                    }
-                }
-            }
+            InvalidateEnPassant();
 
             if (Math.Abs(pposPosition.getY() - pposMoveTo.getY()) == 2 &&
                 pposPosition.getX() == pposMoveTo.getX()) {

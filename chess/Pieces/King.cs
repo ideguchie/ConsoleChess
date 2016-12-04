@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Chess {
+﻿namespace Chess {
     class King : Piece {
 
         private Position posPosition;
@@ -49,32 +43,92 @@ namespace Chess {
             this.blnIsSelected = pblnSelected;
         }
 
+        //Standard piece valid move check
         public bool ValidMove(Piece[,] parrBoard, Position pposMoveTo) {
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 0, -1)) {
-                return true;
-            }
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, 0)) {
-                return true;
-            }
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 0, 1)) {
-                return true;
-            }
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, 0)) {
-                return true;
-            }
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, -1)) {
-                return true;
-            }
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, -1)) {
-                return true;
-            }
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, 1)) {
-                return true;
-            }
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, 1)) {
+            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 0, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, 0) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 0, 1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, 0) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, 1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, 1) ||
+                CheckCastle(parrBoard, pposMoveTo)) {
                 return true;
             }
             return false;
+        }
+
+        //Secondary valid move check to support castle move
+        public bool ValidMove(Piece[,] parrBoard, Position pposMoveTo, bool pblnMove) {
+            //combine all with OR and return true once
+            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 0, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, 0) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 0, 1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, 0) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, 1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, 1) || 
+                CheckCastle(parrBoard, pposMoveTo, true)) {
+                return true;
+            }
+            return false;
+        }
+
+        //Checks if castle is a valid move.
+        private bool CheckCastle(Piece[,] parrBoard, Position pposMoveTo, bool pblnMove = false) {
+            if (blnHasMoved) {
+                return false;
+            }
+
+            if (!blnHasMoved &&
+                posPosition.getX() - 2 == pposMoveTo.getX() &&
+                posPosition.getY() == pposMoveTo.getY() &&
+                (CheckRook(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, pblnMove))) {
+                return true;
+            }
+            if (!blnHasMoved &&
+                posPosition.getX() + 2 == pposMoveTo.getX() &&
+                posPosition.getY() == pposMoveTo.getY() &&
+                CheckRook(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, pblnMove)) {
+                return true;
+            }
+            return false;
+        }
+
+        //Checks if there is a clear path to a rook to castle
+        private bool CheckRook(Piece[,] parrBoard, Position pposMoveTo, Position pposPosition, int x, bool pblnMove = false) {
+            pposPosition.setX(pposPosition.getX() + x);
+            if (pposPosition.getX() < 0 ||
+                pposPosition.getX() > 7) {
+                return false;
+            }
+
+            if (parrBoard[pposPosition.getX(), pposPosition.getY()] != null &&
+                parrBoard[pposPosition.getX(), pposPosition.getY()].PieceType() == "R") {
+                Rook castle = (Rook)parrBoard[pposPosition.getX(), pposPosition.getY()];
+                if (!castle.HasMoved()) {
+                    if (x == 1) {
+                        if (pblnMove) {
+                            parrBoard[7, pposPosition.getY()].SetMoved(true);
+                            parrBoard[5, pposPosition.getY()] = parrBoard[7, pposPosition.getY()];
+                            parrBoard[7, pposPosition.getY()] = null;
+                        }
+                        return true;
+                    } else if (x == -1) {
+                        if (pblnMove) {
+                            parrBoard[0, pposPosition.getY()].SetMoved(true);
+                            parrBoard[3, pposPosition.getY()] = parrBoard[0, pposPosition.getY()];
+                            parrBoard[0, pposPosition.getY()] = null;
+                        }
+                        return true;
+                    }
+                }
+            } else if (parrBoard[pposPosition.getX(), pposPosition.getY()] != null) {
+                return false;
+            }
+            return CheckRook(parrBoard, pposMoveTo, pposPosition, x, pblnMove);
         }
 
         private bool CheckSpace(Piece[,] parrBoard, Position pposMoveTo, Position pposPosition, int x, int y) {
