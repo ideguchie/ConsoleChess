@@ -31,6 +31,10 @@
             //return "King";
         }
 
+        public Position GetPosition() {
+            return posPosition;
+        }
+
         public void SetMoved(bool pblnMoved) {
             this.blnHasMoved = pblnMoved;
         }
@@ -43,41 +47,44 @@
             this.blnIsSelected = pblnSelected;
         }
 
-        //Standard piece valid move check
+        //Standard piece valid move check used when printing board in console.
         public bool ValidMove(Piece[,] parrBoard, Position pposMoveTo) {
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 0, -1) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, 0) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 0, 1) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, 0) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, -1) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, -1) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, 1) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, 1) ||
-                CheckCastle(parrBoard, pposMoveTo)) {
+            Piece[,] objEnemyBoard = (Piece[,])parrBoard.Clone();
+            objEnemyBoard[posPosition.getX(), posPosition.getY()] = null;
+            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, 0, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, 1, 0) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, 0, 1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, -1, 0) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, -1, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, 1, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, -1, 1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, 1, 1) ||
+                CheckCastle(parrBoard, pposMoveTo, objEnemyBoard)) {
                 return true;
             }
             return false;
         }
 
-        //Secondary valid move check to support castle move
+        //Secondary valid move check to support castle move                            
         public bool ValidMove(Piece[,] parrBoard, Position pposMoveTo, bool pblnMove) {
-            //combine all with OR and return true once
-            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 0, -1) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, 0) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 0, 1) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, 0) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, -1) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, -1) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, 1) ||
-                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, 1) || 
-                CheckCastle(parrBoard, pposMoveTo, true)) {
+            Piece[,] objEnemyBoard = (Piece[,])parrBoard.Clone();
+            objEnemyBoard[posPosition.getX(), posPosition.getY()] = null;
+            if (CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, 0, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, 1, 0) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, 0, 1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, -1, 0) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, -1, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, 1, -1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, -1, 1) ||
+                CheckSpace(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), objEnemyBoard, 1, 1) ||
+                CheckCastle(parrBoard, pposMoveTo, objEnemyBoard, true)) {
                 return true;
             }
             return false;
         }
 
         //Checks if castle is a valid move.
-        private bool CheckCastle(Piece[,] parrBoard, Position pposMoveTo, bool pblnMove = false) {
+        private bool CheckCastle(Piece[,] parrBoard, Position pposMoveTo, Piece[,] parrEnemies, bool pblnMove = false) {
             if (blnHasMoved) {
                 return false;
             }
@@ -85,20 +92,42 @@
             if (!blnHasMoved &&
                 posPosition.getX() - 2 == pposMoveTo.getX() &&
                 posPosition.getY() == pposMoveTo.getY() &&
-                (CheckRook(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), -1, pblnMove))) {
+                (CheckRook(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), parrEnemies, -1, pblnMove))) {
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        if (parrBoard[j, i] != null &&
+                            IsEnemy(parrBoard, new Position(j, i))) {
+                            if (parrBoard[j, i].ValidMove(parrEnemies, new Position(posPosition.getX() - 1, posPosition.getY())) ||
+                                parrBoard[j, i].ValidMove(parrEnemies, new Position(posPosition.getX() - 2, posPosition.getY()))) {
+                                return false;
+                            }
+                        }
+                    }
+                }
                 return true;
             }
             if (!blnHasMoved &&
                 posPosition.getX() + 2 == pposMoveTo.getX() &&
                 posPosition.getY() == pposMoveTo.getY() &&
-                CheckRook(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), 1, pblnMove)) {
+                CheckRook(parrBoard, pposMoveTo, new Position(posPosition.getX(), posPosition.getY()), parrEnemies, 1, pblnMove)) {
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        if (parrBoard[j, i] != null &&
+                            IsEnemy(parrBoard, new Position(j, i))) {
+                            if (parrBoard[j, i].ValidMove(parrEnemies, new Position(posPosition.getX() + 1, posPosition.getY())) ||
+                                parrBoard[j, i].ValidMove(parrEnemies, new Position(posPosition.getX() + 2, posPosition.getY()))) {
+                                return false;
+                            }
+                        }
+                    }
+                }
                 return true;
             }
             return false;
         }
 
         //Checks if there is a clear path to a rook to castle
-        private bool CheckRook(Piece[,] parrBoard, Position pposMoveTo, Position pposPosition, int x, bool pblnMove = false) {
+        private bool CheckRook(Piece[,] parrBoard, Position pposMoveTo, Position pposPosition, Piece[,] parrEnemies, int x, bool pblnMove = false) {
             pposPosition.setX(pposPosition.getX() + x);
             if (pposPosition.getX() < 0 ||
                 pposPosition.getX() > 7) {
@@ -112,6 +141,7 @@
                     if (x == 1) {
                         if (pblnMove) {
                             parrBoard[7, pposPosition.getY()].SetMoved(true);
+                            parrBoard[7, pposPosition.getY()].SetPosition(new Position(5, pposPosition.getY()));
                             parrBoard[5, pposPosition.getY()] = parrBoard[7, pposPosition.getY()];
                             parrBoard[7, pposPosition.getY()] = null;
                         }
@@ -119,6 +149,7 @@
                     } else if (x == -1) {
                         if (pblnMove) {
                             parrBoard[0, pposPosition.getY()].SetMoved(true);
+                            parrBoard[0, pposPosition.getY()].SetPosition(new Position(3, pposPosition.getY()));
                             parrBoard[3, pposPosition.getY()] = parrBoard[0, pposPosition.getY()];
                             parrBoard[0, pposPosition.getY()] = null;
                         }
@@ -128,10 +159,10 @@
             } else if (parrBoard[pposPosition.getX(), pposPosition.getY()] != null) {
                 return false;
             }
-            return CheckRook(parrBoard, pposMoveTo, pposPosition, x, pblnMove);
+            return CheckRook(parrBoard, pposMoveTo, pposPosition, parrEnemies, x, pblnMove);
         }
 
-        private bool CheckSpace(Piece[,] parrBoard, Position pposMoveTo, Position pposPosition, int x, int y) {
+        private bool CheckSpace(Piece[,] parrBoard, Position pposMoveTo, Position pposPosition, Piece[,] parrEnemies, int x, int y) {
             pposPosition.setX(pposPosition.getX() + x);
             pposPosition.setY(pposPosition.getY() + y);
             if (pposPosition.getX() < 0 ||
@@ -139,6 +170,17 @@
                 pposPosition.getX() > 7 ||
                 pposPosition.getY() > 7) {
                 return false;
+            }
+
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (parrBoard[j, i] != null &&
+                        IsEnemy(parrBoard, new Position(j, i))) {
+                        if (parrBoard[j, i].ValidMove(parrEnemies, pposPosition)) {
+                            return false;
+                        }
+                    }
+                }
             }
 
             if (parrBoard[pposPosition.getX(), pposPosition.getY()] != null &&

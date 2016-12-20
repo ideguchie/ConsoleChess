@@ -35,6 +35,10 @@
             //return "Rook";
         }
 
+        public Position GetPosition() {
+            return posPosition;
+        }
+
         public void SetMoved(bool pblnMoved) {
             this.blnHasMoved = pblnMoved;
         }

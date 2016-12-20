@@ -11,53 +11,89 @@ namespace Chess {
     /// </summary>
     class Program {
         static void Main(string[] args) {
+            string strHelp = "HELP MENU\nTo enter a position on the board, enter a number on the x axis \n" +
+                "and a number on the y axis with a space in between.\nThe board starts at 0 0 from the top left corner.\n\n" +
+                "Help Menu enter \'help\'\nDeselect current piece enter \'b\'" +
+                "\n";
             Board objBoard = new Board();
+            Console.WriteLine(strHelp);
             objBoard.PrintBoard(null);
             bool moved = false;
             bool CheckMate = false;
 
             #region Game
-            //while (!CheckMate) {
-            //    if (objBoard.GetWhiteTurn()) {
-            //        Console.WriteLine("White select a piece.");
-            //    } else {
-            //        Console.WriteLine("Black select a piece.");
-            //    }
-            //    bool valid = false;
-            //    moved = false;
-            //    Position selection = null;
-            //    while (!valid) {
-            //        string position = Console.ReadLine();
-            //        string[] ints = position.Split(' ');
-            //        int x = -1;
-            //        int y = -1;
-            //        if (Int32.TryParse(ints[0], out x) &&
-            //        Int32.TryParse(ints[1], out y)) {
-            //            selection = new Position(x, y);
-            //            if (objBoard.SelectPiece(selection) != null) {
-            //                objBoard.PrintBoard(selection);
-            //                valid = true;
-            //            }
-            //        }
-            //    }
-            //    valid = false;
-            //    Position movement = null;
-            //    while (!moved) {
-            //        Console.WriteLine("Enter the position to move to.");
+            while (!CheckMate) {
+                if (objBoard.GetWhiteTurn()) {
+                    Console.WriteLine("White select a piece.");
+                } else {
+                    Console.WriteLine("Black select a piece.");
+                }
+                bool valid = false;
+                bool passover = false;
+                moved = false;
+                Position selection = null;
 
-            //        string position = Console.ReadLine();
-            //        string[] ints = position.Split(' ');
-            //        int x = -1;
-            //        int y = -1;
-            //        if (Int32.TryParse(ints[0], out x) &&
-            //        Int32.TryParse(ints[1], out y)) {
-            //            movement = new Position(x, y);
-            //            moved = Move(ref objBoard, selection, movement);
-            //        }
-            //        objBoard.PrintBoard(null);
+                while (!valid) {
+                    string position = Console.ReadLine();
+                    if (position.ToLower() == "b") {
+                        passover = true;
+                        break;
+                    } else if (position.ToLower() == "help") {
+                        passover = true;
+                        Console.WriteLine(strHelp);
+                    }
+                    string[] ints = position.Split(' ');
+                    int x = -1;
+                    int y = -1;
+                    if (Int32.TryParse(ints[0], out x) &&
+                        Int32.TryParse(ints[1], out y) &&
+                        x != -1 &&
+                        y != -1) {
+                        selection = new Position(x, y);
+                        if (objBoard.SelectPiece(selection) != null) {
+                            objBoard.PrintBoard(selection);
+                            valid = true;
+                        }
+                    }
+                }
+                valid = false;
+                Position movement = null;
+                if (!passover) {
+                    while (!moved) {
+                        Console.WriteLine("Enter the position to move to.");
 
-            //    }
-            //}
+                        string position = Console.ReadLine();
+                        if (position.ToLower() == "b") {
+                            break;
+                        } else if (position.ToLower() == "help") {
+                            Console.WriteLine(strHelp);
+                        }
+                        string[] ints = position.Split(' ');
+                        int x = -1;
+                        int y = -1;
+                        if (Int32.TryParse(ints[0], out x) &&
+                            Int32.TryParse(ints[1], out y) &&
+                            x != -1 &&
+                            y != -1) {
+                            movement = new Position(x, y);
+                            moved = Move(ref objBoard, selection, movement);
+                        }
+                    }
+                }
+                if (moved) {
+                    objBoard.PrintBoard(null);
+                }
+                CheckMate = objBoard.GetCheckmate();
+                if (CheckMate) {
+                    if (objBoard.GetWhiteTurn()) {
+                        Console.WriteLine("Black Wins");
+                        Console.ReadLine();
+                    } else {
+                        Console.WriteLine("White Wins");
+                        Console.ReadLine();
+                    }
+                }
+            }
             #endregion
 
             #region King Test
@@ -77,6 +113,9 @@ namespace Chess {
             //if (moved) {
             //    objBoard.PrintBoard(new Position(4, 0));
             //}
+
+            //objBoard.PrintBoard(new Position(5, 7));
+            //objBoard.PrintBoard(new Position(3, 0));
             #endregion
 
             #region Queen Test
@@ -211,154 +250,154 @@ namespace Chess {
             #endregion
 
             #region En Passant Test
-            moved = objBoard.SetPiece(new Position(1, 7), new Position(2, 5));
-            if (moved) {
-                objBoard.PrintBoard(new Chess.Position(2, 5));
-            }
+            //moved = objBoard.SetPiece(new Position(1, 7), new Position(2, 5));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Chess.Position(2, 5));
+            //}
 
-            moved = objBoard.SetPiece(new Position(0, 1), new Position(0, 3));
-            if (moved) {
-                objBoard.PrintBoard(new Position(0, 3));
-            }
+            //moved = objBoard.SetPiece(new Position(0, 1), new Position(0, 3));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(0, 3));
+            //}
 
-            moved = objBoard.SetPiece(new Position(2, 5), new Position(4, 4));
-            if (moved) {
-                objBoard.PrintBoard(new Position(4, 4));
-            }
+            //moved = objBoard.SetPiece(new Position(2, 5), new Position(4, 4));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(4, 4));
+            //}
 
-            moved = objBoard.SetPiece(new Position(0, 3), new Position(0, 4));
-            if (moved) {
-                objBoard.PrintBoard(new Position(0, 4));
-            }
+            //moved = objBoard.SetPiece(new Position(0, 3), new Position(0, 4));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(0, 4));
+            //}
 
-            moved = objBoard.SetPiece(new Position(1, 6), new Position(1, 4));
-            if (moved) {
-                objBoard.PrintBoard(new Position(1, 4));
-            }
+            //moved = objBoard.SetPiece(new Position(1, 6), new Position(1, 4));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(1, 4));
+            //}
 
-            objBoard.PrintBoard(new Position(0, 4));
+            //objBoard.PrintBoard(new Position(0, 4));
 
-            moved = objBoard.SetPiece(new Position(0, 4), new Position(1, 5));
-            if (moved) {
-                objBoard.PrintBoard(new Position(1, 5));
-            }
+            //moved = objBoard.SetPiece(new Position(0, 4), new Position(1, 5));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(1, 5));
+            //}
 
-            moved = objBoard.SetPiece(new Position(0, 6), new Position(1, 5));
-            if (moved) {
-                objBoard.PrintBoard(new Position(1, 5));
-            }
+            //moved = objBoard.SetPiece(new Position(0, 6), new Position(1, 5));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(1, 5));
+            //}
 
-            moved = objBoard.SetPiece(new Position(5, 1), new Position(5, 3));
-            if (moved) {
-                objBoard.PrintBoard(new Position(5, 3));
-            }
+            //moved = objBoard.SetPiece(new Position(5, 1), new Position(5, 3));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(5, 3));
+            //}
 
-            moved = objBoard.SetPiece(new Position(4, 4), new Position(2, 5));
-            if (moved) {
-                objBoard.PrintBoard(new Position(2, 5));
-            }
+            //moved = objBoard.SetPiece(new Position(4, 4), new Position(2, 5));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(2, 5));
+            //}
 
-            moved = objBoard.SetPiece(new Position(5, 3), new Position(5, 4));
-            if (moved) {
-                objBoard.PrintBoard(new Position(5, 4));
-            }
+            //moved = objBoard.SetPiece(new Position(5, 3), new Position(5, 4));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(5, 4));
+            //}
 
-            moved = objBoard.SetPiece(new Position(2, 5), new Position(1, 7));
-            if (moved) {
-                objBoard.PrintBoard(new Position(1, 7));
-            }
+            //moved = objBoard.SetPiece(new Position(2, 5), new Position(1, 7));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(1, 7));
+            //}
 
-            moved = objBoard.SetPiece(new Position(3, 1), new Position(3, 3));
-            if (moved) {
-                objBoard.PrintBoard(new Position(3, 3));
-            }
+            //moved = objBoard.SetPiece(new Position(3, 1), new Position(3, 3));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(3, 3));
+            //}
 
-            moved = objBoard.SetPiece(new Position(1, 7), new Position(0, 5));
-            if (moved) {
-                objBoard.PrintBoard(new Position(0, 5));
-            }
+            //moved = objBoard.SetPiece(new Position(1, 7), new Position(0, 5));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(0, 5));
+            //}
 
-            moved = objBoard.SetPiece(new Position(3, 3), new Position(3, 4));
-            if (moved) {
-                objBoard.PrintBoard(new Position(3, 4));
-            }
+            //moved = objBoard.SetPiece(new Position(3, 3), new Position(3, 4));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(3, 4));
+            //}
 
-            moved = objBoard.SetPiece(new Position(4, 6), new Position(4, 4));
-            if (moved) {
-                objBoard.PrintBoard(new Position(4, 4));
-            }
+            //moved = objBoard.SetPiece(new Position(4, 6), new Position(4, 4));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(4, 4));
+            //}
 
-            objBoard.PrintBoard(new Position(3, 4));
-            objBoard.PrintBoard(new Position(5, 4));
+            //objBoard.PrintBoard(new Position(3, 4));
+            //objBoard.PrintBoard(new Position(5, 4));
 
-            moved = objBoard.SetPiece(new Position(1, 1), new Position(1, 3));
-            if (moved) {
-                objBoard.PrintBoard(new Position(1, 3));
-            }
+            //moved = objBoard.SetPiece(new Position(1, 1), new Position(1, 3));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(1, 3));
+            //}
 
-            objBoard.PrintBoard(new Position(3, 4));
-            objBoard.PrintBoard(new Position(5, 4));
+            //objBoard.PrintBoard(new Position(3, 4));
+            //objBoard.PrintBoard(new Position(5, 4));
 
-            moved = objBoard.SetPiece(new Position(0, 5), new Position(1, 3));
-            if (moved) {
-                objBoard.PrintBoard(new Position(1, 3));
-            }
+            //moved = objBoard.SetPiece(new Position(0, 5), new Position(1, 3));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(1, 3));
+            //}
 
-            objBoard.PrintBoard(new Position(3, 4));
-            objBoard.PrintBoard(new Position(5, 4));
+            //objBoard.PrintBoard(new Position(3, 4));
+            //objBoard.PrintBoard(new Position(5, 4));
 
-            moved = objBoard.SetPiece(new Position(6, 0), new Position(5, 2));
-            if (moved) {
-                objBoard.PrintBoard(new Position(5, 2));
-            }
+            //moved = objBoard.SetPiece(new Position(6, 0), new Position(5, 2));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(5, 2));
+            //}
 
-            objBoard.PrintBoard(new Position(3, 4));
-            objBoard.PrintBoard(new Position(5, 4));
+            //objBoard.PrintBoard(new Position(3, 4));
+            //objBoard.PrintBoard(new Position(5, 4));
 
-            moved = objBoard.SetPiece(new Position(7, 6), new Position(7, 4));
-            if (moved) {
-                objBoard.PrintBoard(new Position(7, 4));
-            }
+            //moved = objBoard.SetPiece(new Position(7, 6), new Position(7, 4));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(7, 4));
+            //}
 
-            objBoard.PrintBoard(new Position(3, 4));
-            objBoard.PrintBoard(new Position(5, 4));
+            //objBoard.PrintBoard(new Position(3, 4));
+            //objBoard.PrintBoard(new Position(5, 4));
 
-            moved = objBoard.SetPiece(new Position(5, 2), new Position(3, 1));
-            if (moved) {
-                objBoard.PrintBoard(new Position(3, 1));
-            }
+            //moved = objBoard.SetPiece(new Position(5, 2), new Position(3, 1));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(3, 1));
+            //}
 
-            objBoard.PrintBoard(new Position(3, 4));
-            objBoard.PrintBoard(new Position(5, 4));
+            //objBoard.PrintBoard(new Position(3, 4));
+            //objBoard.PrintBoard(new Position(5, 4));
 
-            moved = objBoard.SetPiece(new Position(7, 4), new Position(7, 3));
-            if (moved) {
-                objBoard.PrintBoard(new Position(7, 3));
-            }
+            //moved = objBoard.SetPiece(new Position(7, 4), new Position(7, 3));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(7, 3));
+            //}
 
-            objBoard.PrintBoard(new Position(3, 4));
-            objBoard.PrintBoard(new Position(5, 4));
+            //objBoard.PrintBoard(new Position(3, 4));
+            //objBoard.PrintBoard(new Position(5, 4));
 
-            moved = objBoard.SetPiece(new Position(6, 1), new Position(6, 3));
-            if (moved) {
-                objBoard.PrintBoard(new Position(6, 3));
-            }
+            //moved = objBoard.SetPiece(new Position(6, 1), new Position(6, 3));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(6, 3));
+            //}
 
-            objBoard.PrintBoard(new Position(3, 4));
-            objBoard.PrintBoard(new Position(5, 4));
-            objBoard.PrintBoard(new Position(7, 3));
+            //objBoard.PrintBoard(new Position(3, 4));
+            //objBoard.PrintBoard(new Position(5, 4));
+            //objBoard.PrintBoard(new Position(7, 3));
 
-            moved = objBoard.SetPiece(new Position(1, 3), new Position(0, 1));
-            if (moved) {
-                objBoard.PrintBoard(new Position(0, 1));
-            }
+            //moved = objBoard.SetPiece(new Position(1, 3), new Position(0, 1));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(0, 1));
+            //}
 
-            moved = objBoard.SetPiece(new Position(3, 1), new Position(1, 0));
-            if (moved) {
-                objBoard.PrintBoard(new Position(1, 0));
-            }
+            //moved = objBoard.SetPiece(new Position(3, 1), new Position(1, 0));
+            //if (moved) {
+            //    objBoard.PrintBoard(new Position(1, 0));
+            //}
 
-            objBoard.PrintBoard(new Position(7, 3));
+            //objBoard.PrintBoard(new Position(7, 3));
             #endregion
         }
 

@@ -37,5 +37,14 @@ namespace Chess {
         public void setY(int y) {
                 this.y = y;
         }
+
+        //Checks the equality of two positions
+        public bool Equals(Position pposPosition) {
+            if(this.x == pposPosition.getX() &&
+                this.y == pposPosition.getY()) {
+                return true;
+            }
+            return false;
+        }
     }
 }

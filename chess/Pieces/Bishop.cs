@@ -26,6 +26,10 @@
             //return blnIsWhite;
         }
 
+        public Position GetPosition() {
+            return posPosition;
+        }
+
         public string PieceType() {
             return "B";
             //return "Bishop";

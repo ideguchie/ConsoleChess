@@ -37,6 +37,10 @@ namespace Chess {
             return isSelected;
         }
 
+        public Position GetPosition() {
+            return position;
+        }
+
         //Returns the type of piece in the form of a String.
         public string PieceType() {
             return "P";
@@ -149,13 +153,15 @@ namespace Chess {
             Position posEnPassantLeft = new Position(position.getX() - 1, position.getY());
             Position posEnPassantRight = new Position(position.getX() + 1, position.getY());
 
-            if (pposMoveTo.getX() == (position.getX() - 1) &&
+            if (castPawnLeft != null &&
+                pposMoveTo.getX() == (position.getX() - 1) &&
                       parrBoard[posEnPassantLeft.getX(), posEnPassantLeft.getY()] != null &&
                       castPawnLeft.blnMoveTwo &&
                       IsEnemy(parrBoard, posEnPassantLeft)) {
                 strEnPassant = "left";
 
-            } else if (pposMoveTo.getX() == (position.getX() + 1) &&
+            } else if (castPawnRight != null &&
+                pposMoveTo.getX() == (position.getX() + 1) &&
                   parrBoard[posEnPassantRight.getX(), posEnPassantRight.getY()] != null &&
                   castPawnRight.blnMoveTwo &&
                   IsEnemy(parrBoard, posEnPassantRight)) {

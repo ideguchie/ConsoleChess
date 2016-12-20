@@ -6,12 +6,18 @@ namespace Chess {
     /// </summary>
     class Board {
         private Piece[,] arrBoard;
+        private Piece[] arrWhites;
+        private Piece[] arrBlacks;
         private bool blnWhiteTurn;
+        private bool blnCheckmate;
 
         //Constructor
         public Board() {
             arrBoard = new Piece[8, 8];
+            arrWhites = new Piece[16];
+            arrBlacks = new Piece[16];
             blnWhiteTurn = true;
+            blnCheckmate = false;
 
             SetBoard();
         }
@@ -179,14 +185,18 @@ namespace Chess {
         }
         #endregion
 
+        public bool GetCheckmate() {
+            return blnCheckmate;
+        }
+
         public bool GetWhiteTurn() {
             return blnWhiteTurn;
         }
 
         public Piece SelectPiece(Position pposPosition) {
-            if (arrBoard[pposPosition.getX(), pposPosition.getY()] != null) {
+            if (arrBoard[pposPosition.getX(), pposPosition.getY()] != null &&
+                arrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() == "W" == blnWhiteTurn) {
                 arrBoard[pposPosition.getX(), pposPosition.getY()].SetSelected(true);
-                //PrintBoard();
                 return arrBoard[pposPosition.getX(), pposPosition.getY()];
             }
 
@@ -203,7 +213,11 @@ namespace Chess {
             (arrBoard[pposPosition.getX(), pposPosition.getY()].PieceType() == "K" &&
             ((King)arrBoard[pposPosition.getX(), pposPosition.getY()]).ValidMove(arrBoard, pposMoveTo, true))) {
 
-                    arrBoard[pposMoveTo.getX(), pposMoveTo.getY()] = null;
+                    if (arrBoard[pposMoveTo.getX(), pposMoveTo.getY()] != null) {
+                        arrBoard[pposMoveTo.getX(), pposMoveTo.getY()] = null;
+                        //arrBoard[pposMoveTo.getX(), pposMoveTo.getY()].SetPosition(new Position(-1, -1));
+                    }
+
                     arrBoard[pposPosition.getX(), pposPosition.getY()].SetPosition(pposMoveTo);
                     arrBoard[pposMoveTo.getX(), pposMoveTo.getY()] = arrBoard[pposPosition.getX(), pposPosition.getY()];
                     arrBoard[pposPosition.getX(), pposPosition.getY()] = null;
@@ -217,6 +231,35 @@ namespace Chess {
                         InvalidateEnPassant();
                     }
 
+                    //Assess checkmate
+                    if (IsCheck(arrBoard)) {
+                        if (IsCheckMate()) {
+                            blnCheckmate = true;
+                            if (blnWhiteTurn) {
+                                for (int k = 0; k < 15; k++) {
+                                    if (BlockCheck(arrBlacks[k])) {
+                                        blnCheckmate = false;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                for (int k = 0; k < 15; k++) {
+                                    if (BlockCheck(arrWhites[k])) {
+                                        blnCheckmate = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        //Just for text based.
+                        if (blnCheckmate) {
+                            Console.WriteLine("\n\n\nCHECKMATE");
+                        } else {
+                            Console.WriteLine("\n\n\nCHECK");
+                        }
+                        //Just for text based.
+                    }
+
                     blnWhiteTurn = !blnWhiteTurn;
                     return true;
 
@@ -224,6 +267,99 @@ namespace Chess {
 
             }
             return false;
+        }
+
+        private bool BlockCheck(Piece ppcePiece) {
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    Piece[,] objCheckBoard = (Piece[,])arrBoard.Clone();
+                    if (ppcePiece != null &&
+                        ppcePiece.GetPosition().getX() != -1 &&
+                        ppcePiece.ValidMove(objCheckBoard, new Position(j, i))) {
+                        Position position = ppcePiece.GetPosition();
+                        objCheckBoard[j, i] = objCheckBoard[position.getX(), position.getY()];
+                        objCheckBoard[position.getX(), position.getY()] = null;
+                        if (!IsCheck(objCheckBoard)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        private bool IsCheckMate() {
+            if (blnWhiteTurn) {
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        if (arrBlacks[15].ValidMove(arrBoard, new Position(j, i))) {
+                            return false;
+                        }
+                    }
+                }
+            } else {
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        if (arrWhites[15].ValidMove(arrBoard, new Position(j, i))) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        private bool IsCheck(Piece[,] parrBoard) {
+            if (blnWhiteTurn) {
+                Position position = arrBlacks[15].GetPosition();
+                Piece[,] parrEnemies = (Piece[,])parrBoard.Clone();
+                parrEnemies[position.getX(), position.getY()] = null;
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        if (parrBoard[j, i] != null &&
+                            IsEnemy(parrBoard, new Position(j, i), !blnWhiteTurn)) {
+                            if (parrBoard[j, i].PieceType() == "P") {
+                                if((position.getX() == (j + 1) || position.getX() == (j - 1)) && position.getY() == (i - 1)) {
+                                    return true;
+                                }
+                            }
+                            if (parrBoard[j, i].ValidMove(parrEnemies, position)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            } else {
+                Position position = arrWhites[15].GetPosition();
+                Piece[,] parrEnemies = (Piece[,])parrBoard.Clone();
+                parrEnemies[position.getX(), position.getY()] = null;
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        if (parrBoard[j, i] != null &&
+                            IsEnemy(parrBoard, new Position(j, i), !blnWhiteTurn)) {
+                            if (parrBoard[j, i].PieceType() == "P") {
+                                if ((position.getX() == (j + 1) || position.getX() == (j - 1)) && position.getY() == (i + 1)) {
+                                    return true;
+                                }
+                            }
+                            if (parrBoard[j, i].ValidMove(parrEnemies, position)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        //Determines if board space contains an enemy piece.
+        private bool IsEnemy(Piece[,] parrBoard, Position pposPosition, bool pblnIsWhite) {
+            if (parrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() == "W" && pblnIsWhite) {
+                return false;
+            } else if (parrBoard[pposPosition.getX(), pposPosition.getY()].IsWhite() == "B" && !pblnIsWhite) {
+                return false;
+            }
+            return true;
         }
 
         private void InvalidateEnPassant() {
@@ -419,6 +555,42 @@ namespace Chess {
             Queen queBlackQueen = new Queen(false, posBlackQueen);
             King kngBlackKing = new King(false, posBlackKing);
 
+            //Add white pieces to array
+            arrWhites[0] = pwnWhite1;
+            arrWhites[1] = pwnWhite2;
+            arrWhites[2] = pwnWhite3;
+            arrWhites[3] = pwnWhite4;
+            arrWhites[4] = pwnWhite5;
+            arrWhites[5] = pwnWhite6;
+            arrWhites[6] = pwnWhite7;
+            arrWhites[7] = pwnWhite8;
+            arrWhites[8] = kntWhiteKKnight;
+            arrWhites[9] = kntWhiteQKnight;
+            arrWhites[10] = bisWhiteKBishop;
+            arrWhites[11] = bisWhiteQBishop;
+            arrWhites[12] = rokWhiteKRook;
+            arrWhites[13] = rokWhiteQRook;
+            arrWhites[14] = queWhiteQueen;
+            arrWhites[15] = kngWhiteKing;
+
+            //Add black pieces to array
+            arrBlacks[0] = pwnBlack1;
+            arrBlacks[1] = pwnBlack2;
+            arrBlacks[2] = pwnBlack3;
+            arrBlacks[3] = pwnBlack4;
+            arrBlacks[4] = pwnBlack5;
+            arrBlacks[5] = pwnBlack6;
+            arrBlacks[6] = pwnBlack7;
+            arrBlacks[7] = pwnBlack8;
+            arrBlacks[8] = kntBlackKKnight;
+            arrBlacks[9] = kntBlackQKnight;
+            arrBlacks[10] = bisBlackKBishop;
+            arrBlacks[11] = bisBlackQBishop;
+            arrBlacks[12] = rokBlackKRook;
+            arrBlacks[13] = rokBlackQRook;
+            arrBlacks[14] = queBlackQueen;
+            arrBlacks[15] = kngBlackKing;
+
             //set white pieces on board
             arrBoard[posWhitePawn1.getX(), posWhitePawn1.getY()] = pwnWhite1;
             arrBoard[posWhitePawn2.getX(), posWhitePawn2.getY()] = pwnWhite2;
@@ -437,7 +609,7 @@ namespace Chess {
             arrBoard[posWhiteQueen.getX(), posWhiteQueen.getY()] = queWhiteQueen;
             arrBoard[posWhiteKing.getX(), posWhiteKing.getY()] = kngWhiteKing;
 
-            //set black pieces on board
+            ////set black pieces on board
             arrBoard[posBlackPawn1.getX(), posBlackPawn1.getY()] = pwnBlack1;
             arrBoard[posBlackPawn2.getX(), posBlackPawn2.getY()] = pwnBlack2;
             arrBoard[posBlackPawn3.getX(), posBlackPawn3.getY()] = pwnBlack3;
@@ -454,6 +626,8 @@ namespace Chess {
             arrBoard[posBlackKRook.getX(), posBlackKRook.getY()] = rokBlackKRook;
             arrBoard[posBlackQueen.getX(), posBlackQueen.getY()] = queBlackQueen;
             arrBoard[posBlackKing.getX(), posBlackKing.getY()] = kngBlackKing;
+
+
         }
     }
 }

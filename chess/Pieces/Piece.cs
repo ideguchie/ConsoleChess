@@ -19,5 +19,7 @@ namespace Chess {
         bool ValidMove(Piece[,] parrBoard, Position pposMoveTo);
 
         String PieceType();
+
+        Position GetPosition();
     }
 }
